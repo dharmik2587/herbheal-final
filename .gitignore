@@ -1,0 +1,15 @@
+# Python caching
+**/__pycache__/
+*.pyc
+
+# Local environment variables
+backend/.env
+.env
+
+# Large datasets (unused in demo)
+backend/data/
+
+# IDE files
+.vscode/
+.idea/
+.qodo/

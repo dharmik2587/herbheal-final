@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HerbHeal Compass — Conservation-Aware Medicinal Plant Search</title>
+<meta name="description" content="HerbHeal Compass combines medicinal efficacy, IUCN conservation data, and sustainable alternatives. Preserving nature and traditional knowledge, one search at a time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0B0F0A;--bg-2:#111A0F;--surface:#162113;--surface-2:#1D2B19;--surface-3:#243522;
+  --ink:#E8F0E4;--ink-soft:#9AAE90;--ink-muted:#6B7F62;--line:#2A3D25;
+  --safe:#4CAF50;--safe-glow:rgba(76,175,80,0.15);--safe-bg:rgba(76,175,80,0.12);
+  --watch:#FFB300;--watch-bg:rgba(255,179,0,0.12);
+  --risk:#FF8A65;--risk-bg:rgba(255,138,101,0.12);
+  --danger:#EF5350;--danger-bg:rgba(239,83,80,0.12);--danger-glow:rgba(239,83,80,0.15);
+  --unknown:#78909C;--unknown-bg:rgba(120,144,156,0.12);
+  --accent:#66BB6A;--accent-2:#81C784;--accent-gold:#FFD54F;
+  --display:"Fraunces",serif;--body:"Inter",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+  --hindi:"Noto Sans Devanagari",var(--body);--tamil:"Noto Sans Tamil",var(--body);
+  --radius:12px;--radius-sm:8px;--radius-lg:20px;
+  --shadow:0 4px 24px -8px rgba(0,0,0,0.5);--shadow-lg:0 8px 40px -12px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);background-image:radial-gradient(ellipse 800px 600px at 20% -5%,rgba(76,175,80,0.08),transparent 60%),radial-gradient(ellipse 600px 400px at 80% 10%,rgba(255,179,0,0.05),transparent 60%);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(76,175,80,.3)}50%{box-shadow:0 0 20px rgba(76,175,80,.6)}}
+@keyframes counterPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes breathe{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* NAV */
+.top-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);animation:fadeIn .4s ease}
+.nav-brand{display:flex;align-items:center;gap:12px}
+.nav-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--safe),#2E7D32);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 12px rgba(76,175,80,.3)}
+.nav-title{font-family:var(--display);font-weight:700;font-size:20px}.nav-title span{color:var(--accent)}
+.nav-controls{display:flex;align-items:center;gap:12px}
+.lang-switcher{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:100px;overflow:hidden}
+.lang-btn{border:none;background:transparent;color:var(--ink-soft);font-family:var(--body);font-size:12px;font-weight:500;padding:8px 14px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.lang-btn.active{background:var(--safe);color:#fff}
+.lang-btn:hover:not(.active){color:var(--ink);background:var(--surface-2)}
+.impact-counter-mini{display:flex;align-items:center;gap:8px;background:var(--safe-bg);border:1px solid rgba(76,175,80,.25);border-radius:100px;padding:6px 16px 6px 10px;cursor:pointer;transition:all .2s}
+.impact-counter-mini:hover{border-color:var(--safe);box-shadow:0 0 12px rgba(76,175,80,.2)}
+.counter-icon{width:28px;height:28px;border-radius:50%;background:var(--safe);display:flex;align-items:center;justify-content:center;font-size:14px}
+.counter-value{font-family:var(--mono);font-weight:600;font-size:16px;color:var(--safe);transition:transform .3s}
+.counter-value.pop{animation:counterPop .4s ease}
+.counter-label{font-size:11px;color:var(--ink-soft);line-height:1.2}
+
+/* HERO */
+header.hero{padding:48px 0 40px;animation:fadeInUp .6s ease}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--safe);display:inline-block;animation:breathe 2s ease infinite}
+h1.title{font-family:var(--display);font-weight:700;font-size:clamp(32px,5vw,52px);line-height:1.1;margin:0 0 16px;letter-spacing:-.02em;background:linear-gradient(135deg,var(--ink),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h1.title em{font-style:italic;font-weight:500;-webkit-text-fill-color:var(--accent)}
+p.lede{font-size:16px;color:var(--ink-soft);max-width:60ch;margin:0 0 24px;line-height:1.7}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:11px;color:var(--ink-muted)}
+.legend .item{display:flex;align-items:center;gap:6px}
+.legend .swatch{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* DASHBOARD */
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:24px 0;animation:fadeInUp .7s ease .1s both}
+.dash-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:all .25s}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--safe),var(--accent-2));opacity:.6}
+.dash-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 30px -10px rgba(76,175,80,.2)}
+.dash-card.danger::before{background:linear-gradient(90deg,var(--danger),var(--risk))}
+.dash-card.gold::before{background:linear-gradient(90deg,var(--accent-gold),var(--watch))}
+.dash-value{font-family:var(--display);font-weight:700;font-size:32px;margin-bottom:4px}
+.dash-value.safe-color{color:var(--safe)}.dash-value.danger-color{color:var(--danger)}.dash-value.gold-color{color:var(--accent-gold)}
+.dash-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted)}
+.dash-sub{font-size:12px;color:var(--ink-soft);margin-top:6px}
+
+/* SEARCH */
+.search-panel{padding:8px 0;animation:fadeInUp .7s ease .2s both}
+.catalog-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px}
+.search-bar{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.search-bar:focus-within{border-color:var(--safe);box-shadow:0 0 0 3px var(--safe-glow),var(--shadow)}
+.search-bar input[type="text"]{flex:1;border:none;background:transparent;padding:16px 20px;font-family:var(--body);font-size:15px;color:var(--ink);outline:none}
+.search-bar input::placeholder{color:var(--ink-muted)}
+.search-bar button{border:none;background:linear-gradient(135deg,var(--safe),#2E7D32);color:#fff;font-family:var(--body);font-weight:600;font-size:14px;padding:0 28px;cursor:pointer;transition:all .2s}
+.search-bar button:hover{background:linear-gradient(135deg,#66BB6A,#388E3C)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+.filters .field-label{font-family:var(--mono);font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.08em}
+select{font-family:var(--body);font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;outline:none}
+select:focus{border-color:var(--safe)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);padding:7px 14px;border-radius:100px;cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--safe);color:var(--safe);background:var(--safe-bg)}
+
+/* RESULTS */
+.meta-row{display:flex;justify-content:space-between;align-items:baseline;margin:32px 0 18px;flex-wrap:wrap;gap:10px}
+.meta-row h2{font-family:var(--display);font-weight:600;font-size:20px}
+.meta-row .count{font-family:var(--mono);font-size:12px;color:var(--ink-muted)}
+.meta-row .count .endangered-tag{color:var(--danger);font-weight:600}
+#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding-bottom:40px}
+
+/* CARD */
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;cursor:pointer;transition:all .25s;animation:fadeInUp .4s ease both}
+.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 30px -10px rgba(76,175,80,.25)}
+.risk-strip{width:5px;flex-shrink:0}
+.risk-strip.status-safe{background:var(--safe)}.risk-strip.status-near-threatened{background:var(--watch)}
+.risk-strip.status-vulnerable{background:var(--risk)}
+.risk-strip.status-endangered,.risk-strip.status-critically-endangered{background:var(--danger)}
+.risk-strip.status-unknown{background:var(--unknown)}
+.card-body{padding:18px;flex:1;min-width:0}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.card h3{font-family:var(--display);font-weight:600;font-size:18px;margin:0 0 2px;line-height:1.2}
+.card .regional-name{font-size:13px;color:var(--accent);margin-bottom:2px;font-family:var(--hindi)}
+.sci-name{font-family:var(--mono);font-size:11px;font-style:italic;color:var(--ink-muted);margin:0 0 10px}
+.status-badge{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:100px;white-space:nowrap;flex-shrink:0;font-weight:500}
+.status-badge.status-safe{color:var(--safe);background:var(--safe-bg)}
+.status-badge.status-near-threatened{color:var(--watch);background:var(--watch-bg)}
+.status-badge.status-vulnerable{color:var(--risk);background:var(--risk-bg)}
+.status-badge.status-endangered,.status-badge.status-critically-endangered{color:var(--danger);background:var(--danger-bg)}
+.uses-line{font-size:13px;color:var(--ink-soft);margin:0 0 10px}
+.uses-line .label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);display:block;margin-bottom:3px}
+.system-tag{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--ink-muted);border:1px solid var(--line);padding:3px 10px;border-radius:100px}
+.contra-alert-mini{margin-top:10px;padding:8px 12px;background:var(--danger-bg);border:1px solid rgba(239,83,80,.25);border-radius:var(--radius-sm);font-size:11px;color:var(--danger);display:flex;align-items:center;gap:6px}
+.contra-alert-mini .alert-icon{font-size:14px;flex-shrink:0}
+.alt-note{margin-top:12px;padding:10px 12px;background:rgba(76,175,80,.06);border:1px dashed rgba(76,175,80,.25);border-radius:var(--radius-sm);font-size:12px;color:var(--ink-soft)}
+.alt-note .label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--safe);display:block;margin-bottom:4px}
+.alt-note strong{color:var(--accent);font-weight:600}
+.use-safe-btn{margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--safe),#2E7D32);color:#fff;border:none;padding:7px 14px;border-radius:100px;font-family:var(--body);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.use-safe-btn:hover{transform:scale(1.05);box-shadow:0 4px 14px rgba(76,175,80,.35)}
+
+/* STATE PANELS */
+.state-panel{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--ink-soft)}
+.state-panel .glyph{font-size:42px;color:var(--ink-muted);margin-bottom:12px}
+.state-panel h3{font-family:var(--body);font-weight:600;color:var(--ink);margin:0 0 6px;font-size:16px}
+.state-panel p{margin:0;font-size:13px}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-backdrop.open{opacity:1;pointer-events:auto}
+.modal{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius-lg);max-width:600px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);transform:translateY(12px) scale(.96);transition:transform .25s;position:relative}
+.modal-backdrop.open .modal{transform:translateY(0) scale(1)}
+.modal-strip{height:5px;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.modal-strip.status-safe{background:linear-gradient(90deg,var(--safe),var(--accent-2))}
+.modal-strip.status-near-threatened{background:linear-gradient(90deg,var(--watch),#FFC107)}
+.modal-strip.status-vulnerable{background:linear-gradient(90deg,var(--risk),#FF7043)}
+.modal-strip.status-endangered,.modal-strip.status-critically-endangered{background:linear-gradient(90deg,var(--danger),#F44336)}
+.modal-content{padding:28px 32px 32px}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10}
+.modal-close:hover{background:var(--danger-bg);color:var(--danger);border-color:rgba(239,83,80,.3)}
+.modal h2{font-family:var(--display);font-size:26px;font-weight:700;margin:0 0 4px}
+.modal .modal-sci{font-family:var(--mono);font-style:italic;font-size:13px;color:var(--ink-muted);margin:0 0 6px}
+.modal .modal-regional{font-size:15px;color:var(--accent);margin-bottom:18px;font-family:var(--hindi)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.field-grid .field{font-size:13px}
+.field-grid .field .label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);display:block;margin-bottom:3px}
+.uses-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.use-pill{font-size:12px;background:var(--surface-2);border:1px solid var(--line);padding:5px 12px;border-radius:100px;color:var(--ink-soft)}
+.contra-block{background:var(--danger-bg);border:1px solid rgba(239,83,80,.25);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;animation:fadeIn .3s}
+.contra-block .contra-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.contra-block .contra-icon{font-size:20px}
+.contra-block .contra-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--danger);font-weight:600}
+.contra-block .contra-list{list-style:none;padding:0}
+.contra-block .contra-list li{font-size:13px;color:var(--ink);padding:4px 0 4px 18px;position:relative}
+.contra-block .contra-list li::before{content:'⚠';position:absolute;left:0;font-size:11px}
+.alt-block{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-top:4px}
+.alt-block .label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--safe);display:block;margin-bottom:8px;font-weight:500}
+.alt-block .alt-name{font-family:var(--display);font-weight:600;font-size:17px;color:var(--ink)}
+.alt-block .alt-sci{font-family:var(--mono);font-style:italic;font-size:12px;color:var(--ink-muted)}
+.alt-block .alt-score{font-size:12px;color:var(--ink-soft);margin-top:6px}
+.use-safe-btn-modal{margin-top:12px;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--safe),#2E7D32);color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:var(--body);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 12px rgba(76,175,80,.25)}
+.use-safe-btn-modal:hover{transform:scale(1.05);box-shadow:0 4px 18px rgba(76,175,80,.4)}
+
+/* COMPARISON HUB */
+.comparison-hub{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px 28px;margin:32px 0 40px;animation:fadeInUp .7s ease both}
+.comparison-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.comparison-header h2{font-family:var(--display);font-size:22px;color:var(--ink)}
+.comp-select{font-family:var(--body);font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 16px;cursor:pointer;outline:none}
+.comp-select:focus{border-color:var(--safe)}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.comp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:all .2s;display:flex;flex-direction:column}
+.comp-card:hover{border-color:var(--accent)}
+.comp-card h3{font-family:var(--display);font-size:18px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.comp-card .type-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;padding:2px 6px;border-radius:4px;letter-spacing:.05em;font-weight:600}
+.type-label.herb-lbl{background:var(--safe-bg);color:var(--safe)}
+.type-label.gen-lbl{background:var(--risk-bg);color:var(--risk)}
+.comp-sci{font-family:var(--mono);font-style:italic;font-size:11px;color:var(--ink-muted);margin-bottom:12px}
+.comp-bullets{font-size:13px;color:var(--ink-soft);margin-bottom:16px;line-height:1.5;flex:1}
+.comp-metrics{border-top:1px solid var(--line);padding-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px}
+.comp-metric-item .lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:2px}
+.comp-metric-item .val{color:var(--ink);font-weight:500}
+.comp-versus{grid-column:1/-1;background:var(--surface-2);border-radius:var(--radius-sm);padding:14px 18px;font-size:12.5px;color:var(--ink-soft);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.comp-versus strong{color:var(--ink)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:24px 0 40px;font-family:var(--mono);font-size:11px;color:var(--ink-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.sdg-badges{display:flex;gap:8px}
+.sdg-badge{font-size:10px;padding:4px 10px;border-radius:100px;font-weight:600;border:1px solid}
+.sdg-3{color:#4CAF50;border-color:rgba(76,175,80,.3);background:rgba(76,175,80,.08)}
+.sdg-12{color:#FFB300;border-color:rgba(255,179,0,.3);background:rgba(255,179,0,.08)}
+.sdg-15{color:#66BB6A;border-color:rgba(102,187,106,.3);background:rgba(102,187,106,.08)}
+
+/* CHATBOT */
+.chatbot-button{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--safe),#2E7D32);border:none;color:#fff;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(76,175,80,.35);transition:all .25s;z-index:40;animation:glow 3s ease infinite}
+.chatbot-button:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(76,175,80,.5)}
+.chatbot-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:flex-end;padding:24px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}
+.chatbot-modal-backdrop.open{opacity:1;pointer-events:auto}
+.chatbot-modal{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius-lg);width:100%;max-width:440px;max-height:650px;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);transform:translateY(20px) scale(.95);transition:transform .25s}
+.chatbot-modal-backdrop.open .chatbot-modal{transform:translateY(0) scale(1)}
+.chatbot-header{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(76,175,80,.08),transparent);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.chatbot-header h3{margin:0;font-family:var(--display);font-weight:600;font-size:17px}
+.chatbot-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink-soft);padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.chatbot-close:hover{color:var(--danger);background:var(--danger-bg)}
+.chatbot-suggestions{padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);background:var(--surface)}
+.suggestion-chip{font-family:var(--body);font-size:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-soft);padding:5px 12px;border-radius:100px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.suggestion-chip:hover{border-color:var(--safe);color:var(--safe);background:var(--safe-bg)}
+.chatbot-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.chat-message{display:flex;gap:8px;margin-bottom:4px}
+.chat-message.user{justify-content:flex-end}.chat-message.ai{justify-content:flex-start}
+.chat-bubble{max-width:85%;padding:10px 14px;border-radius:var(--radius);font-size:13px;line-height:1.5;word-wrap:break-word}
+.chat-message.user .chat-bubble{background:linear-gradient(135deg,var(--safe),#2E7D32);color:#fff;border-radius:var(--radius) var(--radius) 4px var(--radius)}
+.chat-message.ai .chat-bubble{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius) var(--radius) var(--radius) 4px}
+.chat-loading{display:flex;gap:4px;padding:10px 14px}
+.chat-dot{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:pulse 1.4s infinite}
+.chat-dot:nth-child(2){animation-delay:.2s}.chat-dot:nth-child(3){animation-delay:.4s}
+.chatbot-input-row{padding:12px;border-top:1px solid var(--line);display:flex;gap:8px}
+.chatbot-input-row input{flex:1;border:1px solid var(--line);background:var(--surface);padding:10px 14px;border-radius:var(--radius-sm);font-family:var(--body);font-size:13px;color:var(--ink);outline:none;transition:border-color .2s}
+.chatbot-input-row input::placeholder{color:var(--ink-muted)}
+.chatbot-input-row input:focus{border-color:var(--safe)}
+.chatbot-send-btn{background:linear-gradient(135deg,var(--safe),#2E7D32);color:#fff;border:none;padding:10px 18px;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-size:13px;transition:all .2s}
+.chatbot-send-btn:hover{box-shadow:0 2px 12px rgba(76,175,80,.3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:96px;right:24px;background:var(--surface-2);border:1px solid var(--safe);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:100;transform:translateX(120%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-width:320px}
+.toast.show{transform:translateX(0)}
+.toast .toast-icon{font-size:22px}.toast .toast-text{font-size:13px;color:var(--ink);line-height:1.4}.toast .toast-text strong{color:var(--safe)}
+
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(max-width:768px){.top-nav{flex-direction:column;gap:12px}.nav-controls{width:100%;justify-content:space-between}.dashboard{grid-template-columns:repeat(2,1fr)}.search-bar{flex-direction:column}.search-bar button{padding:14px}.field-grid{grid-template-columns:1fr}#results{grid-template-columns:1fr}.chatbot-modal{max-width:100%}}
+@media(max-width:480px){.dashboard{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top-nav">
+    <div class="nav-brand"><div class="nav-logo">🌿</div><div class="nav-title">HerbHeal <span>Compass</span></div></div>
+    <div class="nav-controls">
+      <div class="lang-switcher" id="lang-switcher">
+        <button class="lang-btn active" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="hi">हिन्दी</button>
+        <button class="lang-btn" data-lang="sa">संस्कृत</button>
+        <button class="lang-btn" data-lang="ta">தமிழ்</button>
+      </div>
+      <div class="impact-counter-mini" id="impact-counter-nav">
+        <div class="counter-icon">🌱</div>
+        <div><div class="counter-value" id="counter-value">12</div><div class="counter-label" id="lbl-saved">plants saved</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow"><span class="dot"></span> <span id="i18n-eyebrow">Conservation-aware medicinal plant search</span></div>
+    <h1 class="title" id="i18n-title">Find the remedy.<br><em>Protect the source.</em></h1>
+    <p class="lede" id="i18n-lede">Search medicinal plants by what they treat. Every result carries its IUCN conservation status — and if a plant is at risk in the wild, we surface a safer alternative with a similar use profile.</p>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--safe)"></span><span id="i18n-safe">Safe</span></span>
+      <span class="item"><span class="swatch" style="background:var(--watch)"></span><span id="i18n-nt">Near Threatened</span></span>
+      <span class="item"><span class="swatch" style="background:var(--risk)"></span><span id="i18n-vul">Vulnerable</span></span>
+      <span class="item"><span class="swatch" style="background:var(--danger)"></span><span id="i18n-end">Endangered / Critical</span></span>
+    </div>
+  </header>
+
+  <section class="dashboard">
+    <div class="dash-card"><div class="dash-value safe-color" id="dash-indexed">347</div><div class="dash-label" id="lbl-indexed">Plants Indexed</div><div class="dash-sub">Across 5 traditional systems</div></div>
+    <div class="dash-card danger"><div class="dash-value danger-color" id="dash-endangered">28</div><div class="dash-label" id="lbl-endangered">Endangered Species</div><div class="dash-sub">Protected through alternatives</div></div>
+    <div class="dash-card gold"><div class="dash-value gold-color">2,487</div><div class="dash-label" id="lbl-users">Simulated Users</div><div class="dash-sub">Testing conservation-first search</div></div>
+    <div class="dash-card"><div class="dash-value safe-color">73%</div><div class="dash-label" id="lbl-awareness">Conservation Awareness</div><div class="dash-sub">Users choosing safe alternatives</div></div>
+  </section>
+
+  <section class="search-panel">
+    <div class="catalog-label" id="lbl-search">Search the herbarium</div>
+    <form id="search-form" role="search">
+      <div class="search-bar">
+        <label for="query" class="visually-hidden">Search</label>
+        <input type="text" id="query" placeholder='Try "anxiety", "liver disease", or "turmeric"…' autocomplete="off">
+        <button type="submit" id="btn-search">Search</button>
+      </div>
+      <div class="filters">
+        <span class="field-label">System</span>
+        <select id="system-filter"><option value="">All traditions</option><option value="Ayurveda">Ayurveda</option><option value="Traditional Chinese Medicine">TCM</option><option value="Unani">Unani</option><option value="Siddha">Siddha</option></select>
+        <span class="field-label">Results</span>
+        <select id="limit-filter"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option></select>
+      </div>
+    </form>
+    <div class="chip-row" id="chip-row">
+      <button class="chip" type="button" data-q="anxiety">anxiety</button>
+      <button class="chip" type="button" data-q="liver disease">liver disease</button>
+      <button class="chip" type="button" data-q="inflammation">inflammation</button>
+      <button class="chip" type="button" data-q="sleep disorders">sleep disorders</button>
+      <button class="chip" type="button" data-q="digestion">digestion</button>
+      <button class="chip" type="button" data-q="immunity">immunity</button>
+      <button class="chip" type="button" data-q="diabetes">diabetes</button>
+      <button class="chip" type="button" data-q="skin">skin</button>
+    </div>
+  </section>
+
+  <div class="meta-row">
+    <h2 id="results-heading">Specimens</h2>
+    <div class="count" id="results-count"></div>
+  </div>
+  <div id="results"><div class="state-panel"><div class="glyph">✻</div><h3>Start with a symptom or a name</h3><p>Try one of the quick searches above, or type your own.</p></div></div>
+  <!-- ========== Integrative Medicine Comparison Hub ========== -->
+  <section class="comparison-hub" id="comparison-hub">
+    <div class="comparison-header">
+      <h2 id="i18n-comp-title">Integrative Comparison: Traditional vs. Modern Generic</h2>
+      <select id="comp-symptom-select" class="comp-select">
+        <option value="anxiety">Anxiety & Stress</option>
+        <option value="sleep">Sleep Disorders</option>
+        <option value="inflammation">Inflammation & Joint Pain</option>
+        <option value="immunity">Immunity & Cold/Flu</option>
+        <option value="liver">Liver Disease</option>
+        <option value="diabetes">Diabetes & Blood Sugar</option>
+        <option value="skin">Skin Disorders</option>
+        <option value="digestion">Digestion & Constipation</option>
+        <option value="memory">Memory & Cognition</option>
+        <option value="hypertension">Hypertension (High BP)</option>
+      </select>
+    </div>
+    
+    <div class="comparison-grid" id="comparison-content">
+      <!-- Loaded dynamically via JS -->
+    </div>
+  </section>
+
+  <footer>
+    <span>HerbHeal Compass — demo dataset, not medical advice</span>
+    <div class="sdg-badges"><span class="sdg-badge sdg-3">SDG 3</span><span class="sdg-badge sdg-12">SDG 12</span><span class="sdg-badge sdg-15">SDG 15</span></div>
+    <span id="api-status">checking API…</span>
+  </footer>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div class="modal-strip" id="modal-strip"></div>
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+</div>
+
+<button class="chatbot-button" id="chatbot-button" title="Open AI Assistant">💬</button>
+
+<div class="chatbot-modal-backdrop" id="chatbot-modal-backdrop">
+  <div class="chatbot-modal">
+    <div class="chatbot-header"><h3>🤖 HerbHeal AI Assistant</h3><button class="chatbot-close" id="chatbot-modal-close">&times;</button></div>
+    <div class="chatbot-suggestions" id="chatbot-suggestions"></div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="chat-message ai"><div class="chat-bubble">Hi! I'm your conservation-aware plant assistant. Ask me about any medicinal plant — its uses, safety, conservation status, or alternatives. 🌿</div></div>
+    </div>
+    <div class="chatbot-input-row">
+      <input type="text" id="chatbot-input" placeholder="Ask about a plant..." autocomplete="off">
+      <button class="chatbot-send-btn" id="chatbot-send">Send</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-icon">🌱</span><span class="toast-text" id="toast-text"></span></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- API Base (same origin since backend serves frontend) ----
+  const API = "";
+
+  // ---- i18n ----
+  const I18N = {
+    en: { eyebrow:"Conservation-aware medicinal plant search", title:'Find the remedy.<br><em>Protect the source.</em>', lede:"Search medicinal plants by what they treat. Every result carries its IUCN conservation status — and if a plant is at risk in the wild, we surface a safer alternative with a similar use profile.", safe:"Safe", nt:"Near Threatened", vul:"Vulnerable", end:"Endangered / Critical", search:"Search the herbarium", btn:"Search", saved:"plants saved", indexed:"Plants Indexed", endangered:"Endangered Species", users:"Simulated Users", awareness:"Conservation Awareness", trad:"Traditionally used for", safer:"Consider this safer alternative", sim:"similarity", useSafe:"🌱 Use Safe Alternative", contra:"⚠ Contraindications & Warnings", family:"Family", genus:"Genus", region:"Region", tradition:"Tradition", about:"About this plant", compTitle:"Integrative Comparison: Traditional vs. Modern Generic" },
+    hi: { eyebrow:"संरक्षण-जागरूक औषधीय पौधों की खोज", title:'उपचार खोजें।<br><em>स्रोत की रक्षा करें।</em>', lede:"औषधीय पौधों को उनके उपचार गुणों से खोजें। हर परिणाम IUCN संरक्षण स्थिति दर्शाता है — और यदि कोई पौधा संकटग्रस्त है, तो हम एक सुरक्षित विकल्प सुझाते हैं।", safe:"सुरक्षित", nt:"निकट संकटग्रस्त", vul:"संवेदनशील", end:"संकटग्रस्त / गंभीर", search:"हर्बेरियम में खोजें", btn:"खोजें", saved:"पौधे बचाए", indexed:"अनुक्रमित पौधे", endangered:"संकटग्रस्त प्रजातियाँ", users:"अनुकरित उपयोगकर्ता", awareness:"संरक्षण जागरूकता", trad:"पारंपरिक रूप से उपयोग", safer:"यह सुरक्षित विकल्प आज़माएं", sim:"समानता", useSafe:"🌱 सुरक्षित विकल्प चुनें", contra:"⚠ मतभेद और चेतावनियाँ", family:"कुल", genus:"वंश", region:"क्षेत्र", tradition:"परंपरा", about:"इस पौधे के बारे में", compTitle:"एकीकृत तुलना: पारंपरिक बनाम आधुनिक जेनेरिक" },
+    sa: { eyebrow:"संरक्षण-सजग औषधि-अन्वेषणम्", title:'चिकित्सां अन्विष्यतु।<br><em>मूलं रक्षतु।</em>', lede:"औषधीय वनस्पतीनां उपचारगुणैः अन्विष्यतु। प्रत्येकं परिणामः IUCN संरक्षणस्थितिं दर्शयति।", safe:"सुरक्षितम्", nt:"निकट-संकटम्", vul:"संवेदनशीलम्", end:"संकटग्रस्तम्", search:"वनस्पति-संग्रहे अन्विष्यतु", btn:"अन्विष्यतु", saved:"वनस्पतयः रक्षिताः", indexed:"अनुक्रमिताः", endangered:"संकटग्रस्ताः", users:"उपयोक्तारः", awareness:"जागरूकता", trad:"पारम्परिकतया उपयुज्यते", safer:"सुरक्षितं विकल्पम्", sim:"सादृश्यम्", useSafe:"🌱 सुरक्षितं चिन्वतु", contra:"⚠ प्रतिषेधाः", family:"कुलम्", genus:"वंशः", region:"क्षेत्रम्", tradition:"परम्परा", about:"विषये", compTitle:"एकीकृत-तुलना: पारम्परिक-चिकित्सा बनाम आधुनिक-चिकित्सा" },
+    ta: { eyebrow:"பாதுகாப்பு-உணர்வுள்ள மூலிகைத் தேடல்", title:'மருந்தைக் கண்டறியுங்கள்.<br><em>மூலத்தைக் காப்பாற்றுங்கள்.</em>', lede:"மூலிகைத் தாவரங்களை அவை குணப்படுத்தும் நோய்களால் தேடுங்கள்.", safe:"பாதுகாப்பு", nt:"அருகில் அச்சுறுத்தல்", vul:"பாதிக்கப்படக்கூடிய", end:"ஆபத்தான / தீவிரம்", search:"தாவரக் களஞ்சியத்தில் தேடுங்கள்", btn:"தேடு", saved:"தாவரங்கள் காப்பாற்றப்பட்டன", indexed:"குறியிடப்பட்டவை", endangered:"ஆபத்தான இனங்கள்", users:"பயனர்கள்", awareness:"விழிப்புணர்வு", trad:"பாரம்பரியமாக பயன்படுத்தப்படுகிறது", safer:"பாதுகாப்பான மாற்றீடு", sim:"ஒற்றுமை", useSafe:"🌱 பாதுகாப்பான மாற்றீடு", contra:"⚠ முரண்பாடுகள்", family:"குடும்பம்", genus:"இனம்", region:"பகுதி", tradition:"மரபு", about:"பற்றி", compTitle:"ஒருங்கிணைந்த ஒப்பீடு: பாரம்பரிய மூலிகை மற்றும் நவீன மருந்து" }
+  };
+  let lang = "en";
+  function t(k){ return (I18N[lang]&&I18N[lang][k])||I18N.en[k]||k; }
+  function switchLang(l){
+    lang=l;
+    document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));
+    document.getElementById("i18n-eyebrow").textContent=t("eyebrow");
+    document.getElementById("i18n-title").innerHTML=t("title");
+    document.getElementById("i18n-lede").textContent=t("lede");
+    document.getElementById("i18n-safe").textContent=t("safe");
+    document.getElementById("i18n-nt").textContent=t("nt");
+    document.getElementById("i18n-vul").textContent=t("vul");
+    document.getElementById("i18n-end").textContent=t("end");
+    document.getElementById("lbl-search").textContent=t("search");
+    document.getElementById("btn-search").textContent=t("btn");
+    document.getElementById("lbl-saved").textContent=t("saved");
+    document.getElementById("lbl-indexed").textContent=t("indexed");
+    document.getElementById("lbl-endangered").textContent=t("endangered");
+    document.getElementById("lbl-users").textContent=t("users");
+    document.getElementById("lbl-awareness").textContent=t("awareness");
+    document.getElementById("i18n-comp-title").textContent=t("compTitle");
+    if(lastResults.length) renderResults(lastQuery,lastResults);
+    const cs=document.getElementById("comp-symptom-select");
+    if(cs) loadComparison(cs.value);
+  }
+  document.getElementById("lang-switcher").addEventListener("click",e=>{const b=e.target.closest(".lang-btn");if(b)switchLang(b.dataset.lang);});
+
+  // ---- State ----
+  let plantsSaved=12, lastResults=[], lastQuery="";
+  const counterEl=document.getElementById("counter-value");
+  const toastEl=document.getElementById("toast"), toastText=document.getElementById("toast-text");
+
+  function incrementCounter(orig,alt){
+    plantsSaved++;
+    counterEl.textContent=plantsSaved;
+    counterEl.classList.remove("pop");void counterEl.offsetWidth;counterEl.classList.add("pop");
+    toastText.innerHTML="<strong>"+alt+"</strong> chosen instead of "+orig+". Conservation impact +1 🌱";
+    toastEl.classList.add("show");
+    setTimeout(()=>toastEl.classList.remove("show"),4000);
+  }
+
+  // ---- DOM ----
+  const form=document.getElementById("search-form"), queryInput=document.getElementById("query");
+  const systemFilter=document.getElementById("system-filter"), limitFilter=document.getElementById("limit-filter");
+  const resultsEl=document.getElementById("results"), resultsHeading=document.getElementById("results-heading");
+  const resultsCount=document.getElementById("results-count"), chipRow=document.getElementById("chip-row");
+  const modalBackdrop=document.getElementById("modal-backdrop"), modalContent=document.getElementById("modal-content");
+  const modalStrip=document.getElementById("modal-strip"), modalClose=document.getElementById("modal-close");
+  const apiStatus=document.getElementById("api-status");
+
+  const SLUG=s=>(s||"unknown").toLowerCase().replace(/\s+/g,"-");
+  function esc(s){if(s==null)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+  // ---- API ----
+  async function apiGet(path){const r=await fetch(API+path);if(!r.ok){const b=await r.json().catch(()=>({}));throw new Error(b.error||"Request failed ("+r.status+")");}return r.json();}
+
+  async function checkHealth(){
+    try{const d=await apiGet("/health");apiStatus.textContent="API online — "+d.plant_count+" plants loaded";}
+    catch(e){apiStatus.textContent="API unreachable";}
+  }
+
+  // ---- Render ----
+  function getName(p){
+    if(lang==="en")return p.name;
+    if(p.names&&p.names[lang])return p.names[lang];
+    return p.name;
+  }
+
+  function renderCard(plant,i){
+    const slug=SLUG(plant.iucn_status);
+    const card=document.createElement("article");
+    card.className="card";card.tabIndex=0;card.style.animationDelay=(i*0.05)+"s";
+    const displayName=getName(plant);
+    const regionalLine=lang==="en"&&plant.names?'<div class="regional-name">'+(plant.names.hi||"")+(plant.names.sa?" · "+plant.names.sa:"")+'</div>'
+      :(lang!=="en"?'<div class="regional-name" style="color:var(--ink-soft);font-size:12px">'+esc(plant.name)+'</div>':"");
+
+    let contraHtml="";
+    if(plant.contraindications&&plant.contraindications.length){
+      contraHtml='<div class="contra-alert-mini"><span class="alert-icon">⚠️</span>'+esc(plant.contraindications[0].substring(0,60))+(plant.contraindications[0].length>60?"…":"")+"</div>";
+    }
+
+    let altHtml="";
+    if(plant.is_risky&&plant.safe_alternative){
+      const a=plant.safe_alternative;
+      altHtml='<div class="alt-note"><span class="label">'+t("safer")+'</span><strong>'+esc(a.name)+'</strong> — '+esc(a.iucn_status).toLowerCase()
+        +' ('+(a.similarity_score*100).toFixed(0)+'% '+t("sim")+')'
+        +'<br><button class="use-safe-btn" data-orig="'+esc(plant.name)+'" data-alt="'+esc(a.name)+'">'+t("useSafe")+'</button></div>';
+    }
+
+    card.innerHTML='<div class="risk-strip status-'+slug+'"></div><div class="card-body">'
+      +'<div class="card-top"><div><h3>'+esc(displayName)+'</h3>'+regionalLine+'<p class="sci-name">'+esc(plant.scientific_name)+'</p></div>'
+      +'<span class="status-badge status-'+slug+'">'+esc(plant.iucn_status)+'</span></div>'
+      +'<p class="uses-line"><span class="label">'+t("trad")+'</span>'+esc((plant.uses||[]).slice(0,3).join(", "))+'</p>'
+      +'<span class="system-tag">'+esc(plant.traditional_system)+'</span>'
+      +contraHtml+altHtml+'</div>';
+
+    card.addEventListener("click",e=>{if(e.target.closest(".use-safe-btn"))return;openModal(plant.plant_id);});
+    return card;
+  }
+
+  function renderResults(query,results){
+    lastResults=results;lastQuery=query;
+    resultsHeading.textContent=query?'Results for "'+query+'"':"Specimens";
+    if(!results.length){resultsCount.textContent="";resultsEl.innerHTML='<div class="state-panel"><div class="glyph">❓</div><h3>No specimens matched</h3><p>Try a broader term.</p></div>';return;}
+    const dc=results.filter(p=>p.is_risky).length;
+    resultsCount.innerHTML=results.length+" result"+(results.length===1?"":"s")+(dc?' · <span class="endangered-tag">'+dc+" at risk</span>":"");
+    resultsEl.innerHTML="";
+    results.forEach((p,i)=>resultsEl.appendChild(renderCard(p,i)));
+  }
+
+  // ---- Modal ----
+  async function openModal(id){
+    modalBackdrop.classList.add("open");document.body.style.overflow="hidden";
+    modalContent.innerHTML='<p style="color:var(--ink-soft)">Loading…</p>';modalStrip.className="modal-strip";
+    try{
+      const plant=await apiGet("/plant/"+id);
+      const slug=SLUG(plant.iucn_status);
+      modalStrip.className="modal-strip status-"+slug;
+      const displayName=getName(plant);
+      let regional="";
+      if(plant.names){const parts=[];if(plant.names.hi)parts.push("हिन्दी: "+plant.names.hi);if(plant.names.sa)parts.push("संस्कृत: "+plant.names.sa);if(plant.names.ta)parts.push("தமிழ்: "+plant.names.ta);regional=parts.join(" · ");}
+
+      let contraHtml="";
+      if(plant.contraindications&&plant.contraindications.length){
+        contraHtml='<div class="contra-block"><div class="contra-header"><span class="contra-icon">🚨</span><span class="contra-title">'+t("contra")+'</span></div><ul class="contra-list">'
+          +plant.contraindications.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul></div>';
+      }
+
+      let altHtml="";
+      if(plant.is_risky&&plant.safe_alternative){
+        const a=plant.safe_alternative;
+        altHtml='<div class="alt-block"><span class="label">'+t("safer")+'</span><div class="alt-name">'+esc(a.name)+'</div><div class="alt-sci">'+esc(a.scientific_name)+'</div>'
+          +'<div class="alt-score">'+t("sim")+': '+(a.similarity_score*100).toFixed(0)+'%</div>'
+          +'<button class="use-safe-btn-modal" data-orig="'+esc(plant.name)+'" data-alt="'+esc(a.name)+'">'+t("useSafe")+'</button></div>';
+      }
+
+      let descHtml="";
+      if(plant.description) descHtml='<div style="margin-bottom:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:13px;color:var(--ink-soft);line-height:1.6"><span style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);display:block;margin-bottom:6px">'+t("about")+'</span>'+esc(plant.description)+'</div>';
+
+      modalContent.innerHTML='<h2>'+esc(displayName)+'</h2><p class="modal-sci">'+esc(plant.scientific_name)+'</p>'
+        +(regional?'<p class="modal-regional">'+esc(regional)+'</p>':'')
+        +'<div class="field-grid"><div class="field"><span class="label">'+t("family")+'</span>'+esc(plant.family)+'</div>'
+        +'<div class="field"><span class="label">'+t("genus")+'</span>'+esc(plant.genus)+'</div>'
+        +'<div class="field"><span class="label">'+t("region")+'</span>'+esc(plant.region)+'</div>'
+        +'<div class="field"><span class="label">'+t("tradition")+'</span>'+esc(plant.traditional_system)+'</div></div>'
+        +'<span class="status-badge status-'+slug+'" style="margin-bottom:14px;display:inline-block">'+esc(plant.iucn_status)+'</span>'
+        +'<div class="uses-pills" style="margin-top:14px">'+(plant.uses||[]).map(u=>'<span class="use-pill">'+esc(u)+'</span>').join('')+'</div>'
+        +descHtml+contraHtml+altHtml;
+    }catch(e){modalContent.innerHTML='<p style="color:var(--danger)">Error: '+esc(e.message)+'</p>';}
+  }
+  function closeModal(){modalBackdrop.classList.remove("open");document.body.style.overflow="";}
+  modalClose.addEventListener("click",closeModal);
+  modalBackdrop.addEventListener("click",e=>{if(e.target===modalBackdrop)closeModal();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+  // ---- Use Safe Alternative (delegation) ----
+  document.addEventListener("click",e=>{
+    const btn=e.target.closest(".use-safe-btn,.use-safe-btn-modal");
+    if(!btn)return;e.stopPropagation();
+    incrementCounter(btn.dataset.orig,btn.dataset.alt);
+    btn.textContent="✅ Switched!";btn.style.background="var(--surface-2)";btn.style.color="var(--safe)";btn.disabled=true;
+    setTimeout(()=>closeModal(),800);
+  });
+
+  // ---- Search ----
+  async function runSearch(query){
+    resultsEl.innerHTML='<div class="state-panel"><div class="glyph">…</div><h3>Searching…</h3><p>Matching "'+esc(query)+'"</p></div>';
+    const params=new URLSearchParams({q:query,limit:limitFilter.value});
+    if(systemFilter.value)params.set("system",systemFilter.value);
+    try{const data=await apiGet("/search?"+params);renderResults(data.query,data.results);}
+    catch(e){resultsEl.innerHTML='<div class="state-panel"><div class="glyph">⚠</div><h3>Search failed</h3><p>'+esc(e.message)+'</p></div>';}
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();const q=queryInput.value.trim();if(q)runSearch(q);});
+  chipRow.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;queryInput.value=b.dataset.q;runSearch(b.dataset.q);});
+  systemFilter.addEventListener("change",()=>{if(queryInput.value.trim())runSearch(queryInput.value.trim());});
+  limitFilter.addEventListener("change",()=>{if(queryInput.value.trim())runSearch(queryInput.value.trim());});
+
+  // ---- Chatbot ----
+  const chatBtn=document.getElementById("chatbot-button"),chatBD=document.getElementById("chatbot-modal-backdrop");
+  const chatClose=document.getElementById("chatbot-modal-close"),chatMsgs=document.getElementById("chatbot-messages");
+  const chatInput=document.getElementById("chatbot-input"),chatSend=document.getElementById("chatbot-send");
+  const chatSugg=document.getElementById("chatbot-suggestions");
+
+  ["What is Tulsi used for?","Which plants are endangered?","How do safe alternatives work?","Herbs for anxiety?","Contraindications?"].forEach(q=>{
+    const c=document.createElement("button");c.className="suggestion-chip";c.textContent=q;
+    c.addEventListener("click",()=>{chatInput.value=q;sendChat();});
+    chatSugg.appendChild(c);
+  });
+
+  function openChat(){chatBD.classList.add("open");chatInput.focus();}
+  function closeChat(){chatBD.classList.remove("open");}
+  chatBtn.addEventListener("click",openChat);
+  chatClose.addEventListener("click",closeChat);
+  chatBD.addEventListener("click",e=>{if(e.target===chatBD)closeChat();});
+
+  function addMsg(who,text){
+    const d=document.createElement("div");d.className="chat-message "+who;
+    const b=document.createElement("div");b.className="chat-bubble";b.innerHTML=text.replace(/\n/g,"<br>");
+    d.appendChild(b);chatMsgs.appendChild(d);chatMsgs.scrollTop=chatMsgs.scrollHeight;
+  }
+
+  async function sendChat(){
+    const msg=chatInput.value.trim();if(!msg)return;
+    addMsg("user",esc(msg));chatInput.value="";
+    const ld=document.createElement("div");ld.className="chat-message ai";ld.id="chat-ld";
+    ld.innerHTML='<div class="chat-loading"><div class="chat-dot"></div><div class="chat-dot"></div><div class="chat-dot"></div></div>';
+    chatMsgs.appendChild(ld);chatMsgs.scrollTop=chatMsgs.scrollHeight;
+    try{
+      const r=await fetch(API+"/ai/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg})});
+      const ldr=document.getElementById("chat-ld");if(ldr)ldr.remove();
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||"Failed");}
+      const data=await r.json();addMsg("ai",data.response);
+    }catch(e){const ldr=document.getElementById("chat-ld");if(ldr)ldr.remove();addMsg("ai","Sorry, error: "+e.message);}
+  }
+  chatSend.addEventListener("click",sendChat);
+  chatInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendChat();}});
+
+  // ---- Comparison Hub ----
+  const compSelect = document.getElementById("comp-symptom-select");
+  const compContent = document.getElementById("comparison-content");
+
+  async function loadComparison(symptomId) {
+    compContent.innerHTML = '<p style="grid-column:1/-1;color:var(--ink-soft);text-align:center">Loading comparison details…</p>';
+    try {
+      const data = await apiGet("/comparison/" + symptomId);
+      
+      const speedHerb = data.speed_comparison.split('|')[0].replace('Herb:', '').trim();
+      const speedGen = data.speed_comparison.split('|')[1].replace('Generic:', '').trim();
+      
+      compContent.innerHTML = `
+        <div class="comp-card">
+          <h3>🌱 ${esc(data.herb)} <span class="type-label herb-lbl">Traditional Herb</span></h3>
+          <div class="comp-sci">${esc(data.herb_sci)}</div>
+          <div class="comp-bullets">${esc(data.herb_benefits)}</div>
+          <div class="comp-metrics">
+            <div class="comp-metric-item"><span class="lbl">Efficacy Speed</span><span class="val">${esc(speedHerb)}</span></div>
+            <div class="comp-metric-item"><span class="lbl">Safety Profile</span><span class="val">Non-addictive</span></div>
+          </div>
+        </div>
+        
+        <div class="comp-card">
+          <h3>💊 ${esc(data.generic)} <span class="type-label gen-lbl">Generic Modern</span></h3>
+          <div class="comp-sci">Allopathic Formulation</div>
+          <div class="comp-bullets">${esc(data.generic_benefits)}</div>
+          <div class="comp-metrics">
+            <div class="comp-metric-item"><span class="lbl">Efficacy Speed</span><span class="val">${esc(speedGen)}</span></div>
+            <div class="comp-metric-item"><span class="lbl">Safety Profile</span><span class="val">${esc(data.safety_comparison.split('|')[1].trim())}</span></div>
+          </div>
+        </div>
+        
+        <div class="comp-versus">
+          <div><strong>Mechanism of Action:</strong> ${esc(data.mode_comparison)}</div>
+          <div><strong>Ecological & Biodiversity Impact:</strong> ${esc(data.conservation_impact)}</div>
+          <div><strong>Integrative Clinical Guidance:</strong> ${esc(data.suitability)}</div>
+        </div>
+      `;
+    } catch(e) {
+      compContent.innerHTML = '<p style="grid-column:1/-1;color:var(--danger);text-align:center">Failed to load comparison: ' + esc(e.message) + '</p>';
+    }
+  }
+
+  if (compSelect) {
+    compSelect.addEventListener("change", e => loadComparison(e.target.value));
+  }
+
+  // ---- Init ----
+  checkHealth();
+  if (compSelect) loadComparison(compSelect.value);
+
+  // Animate dashboard numbers
+  function animNum(id,target){const el=document.getElementById(id);if(!el)return;let c=0;const s=Math.ceil(target/40);const iv=setInterval(()=>{c+=s;if(c>=target){c=target;clearInterval(iv);}el.textContent=c;},30);}
+  animNum("dash-indexed",347);animNum("dash-endangered",28);
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "en": {
+    "appTitle": "HerbHeal Compass — Conservation-Aware Plant Search",
+    "tagline": "Find the remedy. Protect the source.",
+    "searchPlaceholder": "Try 'anxiety', 'liver disease', or 'turmeric'...",
+    "safeStatus": "Safe",
+    "vulnerableStatus": "Vulnerable",
+    "endangeredStatus": "Endangered / Critical",
+    "traditionalUses": "Traditionally used for",
+    "saferAlternative": "Safer alternative",
+    "footerText": "HerbHeal Compass — demo dataset, not medical advice"
+  },
+  "hi": {
+    "appTitle": "हर्बहील कम्पास — संरक्षण-जागरूक पौधा खोज",
+    "tagline": "उपाय ढूंढें। स्रोत की रक्षा करें।",
+    "searchPlaceholder": "'चिंता', 'लीवर रोग', या 'हल्दी' आज़माएं...",
+    "safeStatus": "सुरक्षित",
+    "vulnerableStatus": "संकटग्रस्त",
+    "endangeredStatus": "लुप्तप्राय / गंभीर",
+    "traditionalUses": "पारंपरिक रूप से उपयोग",
+    "saferAlternative": "सुरक्षित विकल्प",
+    "footerText": "हर्बहील कम्पास — डेमो डेटा, चिकित्सीय सलाह नहीं"
+  },
+  "ta": {
+    "appTitle": "ஹெர்ப்ஹீல் திசைகாட்டி — பாதுகாப்பு-அவர்கள் தாவர தேடல்",
+    "tagline": "மருந்தைக் கண்டுபிடி. மூலத்தைப் பாதுகாக்க.",
+    "searchPlaceholder": "'கவலை', 'கல்லீரல் நோய்', அல்லது 'மஞ்சள்' முயற்சிக்கவும்...",
+    "safeStatus": "பாதுகாப்பான",
+    "vulnerableStatus": "பாதிக்கப்படக்கூடிய",
+    "endangeredStatus": "அருகியுள்ள / முக்கியமான",
+    "traditionalUses": "பாரம்பரியமாக பயன்படுத்தப்படுகிறது",
+    "saferAlternative": "பாதுகாப்பான மாற்று",
+    "footerText": "ஹெர்ப்ஹீல் திசைகாட்டி — டெமோ தரவு, மருத்துவ ஆலோசனை அல்ல"
+  },
+  "sa": {
+    "appTitle": "हर्बहील दिक्सूचक — संरक्षण-सजगौषधि अन्वेषणम्",
+    "tagline": "उपायं अन्विष्यताम्। स्रोतं रक्षताम्।",
+    "searchPlaceholder": "'चिन्ता', 'यकृद्रोग', 'हरिद्रा' इति प्रयत्नं कुरुत...",
+    "safeStatus": "सुरक्षित",
+    "vulnerableStatus": "सङ्कटग्रस्त",
+    "endangeredStatus": "लुप्तप्रायः / गम्भीर",
+    "traditionalUses": "पारम्परिकरूपेण उपयुज्यते",
+    "saferAlternative": "सुरक्षितः विकल्पः",
+    "footerText": "हर्बहील दिक्सूचक — प्रदर्शनसामग्री, न चिकित्सापरामर्शः"
+  }
+}
