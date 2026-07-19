@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Herb {
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  scientificName      String?
+  description         String
+  imageUrl            String?
+  ayurvedicProperties String   @default("[]")
+  taste               String   @default("[]")
+  temperature         String
+  doshas              String   @default("[]")
+  organs              String   @default("[]")
+  contraindications   String   @default("[]")
+  knownCompounds      String   @default("[]")
+  compounds           String?
+  lastSyncedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  symptoms     HerbSymptom[]
+  researchLogs ResearchLog[]
+
+  @@map("herbs")
+}
+
+model Symptom {
+  id    String        @id @default(cuid())
+  name  String        @unique
+  herbs HerbSymptom[]
+
+  @@map("symptoms")
+}
+
+model HerbSymptom {
+  herbId    String
+  symptomId String
+  strength  Int    @default(5)
+
+  herb    Herb    @relation(fields: [herbId], references: [id], onDelete: Cascade)
+  symptom Symptom @relation(fields: [symptomId], references: [id], onDelete: Cascade)
+
+  @@id([herbId, symptomId])
+  @@map("herb_symptoms")
+}
+
+model ResearchLog {
+  id        String   @id @default(cuid())
+  herbId    String
+  herb      Herb     @relation(fields: [herbId], references: [id], onDelete: Cascade)
+  source    String
+  title     String
+  url       String
+  summary   String?
+  fetchedAt DateTime @default(now())
+
+  @@unique([herbId, source, url])
+  @@map("research_logs")
+}

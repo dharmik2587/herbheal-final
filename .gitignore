@@ -1,15 +1,13 @@
-# Python caching
+node_modules/
+.next/
+*.db
+*.db-journal
+.env.local
+.env
+backend/.env
 **/__pycache__/
 *.pyc
-
-# Local environment variables
-backend/.env
-.env
-
-# Large datasets (unused in demo)
 backend/data/
-
-# IDE files
 .vscode/
 .idea/
 .qodo/
