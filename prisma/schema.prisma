@@ -28,8 +28,49 @@ model Herb {
 
   symptoms     HerbSymptom[]
   researchLogs ResearchLog[]
+  interactions DrugInteraction[]
+  marketPrice  MarketPrice?
 
   @@map("herbs")
+}
+
+model DrugInteraction {
+  id             String @id @default(cuid())
+  herbId         String
+  herb           Herb   @relation(fields: [herbId], references: [id], onDelete: Cascade)
+  herbCommon     String
+  drug           String
+  drugClass      String
+  severity       String // "mild" | "moderate" | "severe"
+  risk           String
+  mechanism      String
+  recommendation String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([herbId, drug])
+  @@index([drug])
+  @@map("drug_interactions")
+}
+
+// One row per herb. Replaces the CSV-fallback / Google-Sheets-at-request-time
+// approach in lib/market-prices.ts — a scheduled sync job (see
+// lib/market-sync.ts) now writes into this table, so the API always reads
+// from the DB instead of hitting an external sheet on every request.
+model MarketPrice {
+  id             String   @id @default(cuid())
+  herbId         String   @unique
+  herb           Herb     @relation(fields: [herbId], references: [id], onDelete: Cascade)
+  scientificName String
+  commonName     String
+  pricePerKg     Float
+  currency       String   @default("INR")
+  buyerLocation  String
+  source         String   @default("seed") // "seed" | "google_sheets" | "manual"
+  lastUpdated    DateTime @updatedAt
+
+  @@map("market_prices")
 }
 
 model Symptom {

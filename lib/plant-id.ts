@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { identifyWithCustomModel, CustomModelPrediction } from '@/lib/custom-model';
 
 export interface PlantIdResponse {
   access_token: string;
@@ -115,4 +116,60 @@ export async function mapToLocalHerb(scientificName: string) {
     return herbs[0];
   }
   return null;
+}
+
+const MIN_CUSTOM_MODEL_CONFIDENCE = 0.4;
+
+export interface StrategyResult {
+  source: 'custom-model' | 'plantid';
+  scientific: string;
+  commonNames: string[];
+  confidence: number;
+  plantIdRaw?: PlantIdResponse;
+  customModelRaw?: CustomModelPrediction;
+}
+
+/**
+ * IDENTIFY_STRATEGY env var controls this:
+ *  - "api" (default)     -> Plant.id only. Production-ready today.
+ *  - "custom-first"      -> try your trained model; if it errors or its
+ *                           confidence is below MIN_CUSTOM_MODEL_CONFIDENCE,
+ *                           fall back to Plant.id. Flip this on once you've
+ *                           trained + validated a model (see /ml).
+ *  - "custom-only"       -> your model only, no fallback. Only use after
+ *                           checking real accuracy with ml/evaluate.py.
+ */
+export async function identifyPlantWithStrategy(imageBase64: string): Promise<StrategyResult> {
+  const strategy = process.env.IDENTIFY_STRATEGY ?? 'api';
+
+  if (strategy !== 'api') {
+    const prediction = await identifyWithCustomModel(imageBase64);
+    if (prediction && prediction.confidence >= MIN_CUSTOM_MODEL_CONFIDENCE) {
+      return {
+        source: 'custom-model',
+        scientific: prediction.scientific,
+        commonNames: [prediction.label],
+        confidence: prediction.confidence,
+        customModelRaw: prediction,
+      };
+    }
+    if (strategy === 'custom-only') {
+      throw new Error(
+        prediction
+          ? `Custom model confidence too low (${prediction.confidence.toFixed(2)}) and IDENTIFY_STRATEGY=custom-only has no fallback configured`
+          : 'Custom model unavailable and IDENTIFY_STRATEGY=custom-only has no fallback configured'
+      );
+    }
+    // custom-first falls through to Plant.id below
+  }
+
+  const plantIdResult = await identifyPlant(imageBase64);
+  const top = plantIdResult.result?.classification?.suggestions?.[0];
+  return {
+    source: 'plantid',
+    scientific: top?.name ?? '',
+    commonNames: top?.details?.common_names ?? [],
+    confidence: top?.probability ?? 0,
+    plantIdRaw: plantIdResult,
+  };
 }

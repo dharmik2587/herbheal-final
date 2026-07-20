@@ -1,19 +1,7 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
-
-interface Interaction {
-  herb: string;
-  herbCommon: string;
-  drug: string;
-  drugClass: string;
-  severity: 'mild' | 'moderate' | 'severe';
-  risk: string;
-  mechanism: string;
-  recommendation: string;
-}
 
 export async function GET(request: Request) {
   try {
@@ -22,57 +10,62 @@ export async function GET(request: Request) {
     const drugQuery = searchParams.get('drug')?.toLowerCase() || '';
     const listQuery = searchParams.get('list');
 
-    const filePath = path.join(process.cwd(), 'public', 'data', 'interactions.json');
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const interactions: Interaction[] = JSON.parse(fileContent);
-
-    // Handle list queries first (e.g. ?list=drugs for the drug dropdown)
     if (listQuery === 'drugs') {
-      const distinctDrugs = Array.from(new Set(interactions.map((i) => i.drug))).sort();
-      return NextResponse.json({ data: distinctDrugs });
+      const rows = await prisma.drugInteraction.findMany({
+        distinct: ['drug'],
+        select: { drug: true },
+        orderBy: { drug: 'asc' },
+      });
+      return NextResponse.json({ data: rows.map(r => r.drug) });
     }
 
     if (listQuery === 'herbs') {
-      const distinctHerbs = Array.from(new Set(interactions.map((i) => i.herbCommon))).sort();
-      return NextResponse.json({ data: distinctHerbs });
-    }
-
-    if (!herbQuery && !drugQuery) {
-      return NextResponse.json({
-        data: interactions.slice(0, 12),
-        meta: {
-          total: interactions.length,
-          herbs: Array.from(new Set(interactions.map((i) => i.herbCommon))),
-          drugs: Array.from(new Set(interactions.map((i) => i.drug))),
-        },
+      const rows = await prisma.drugInteraction.findMany({
+        distinct: ['herbCommon'],
+        select: { herbCommon: true },
+        orderBy: { herbCommon: 'asc' },
       });
+      return NextResponse.json({ data: rows.map(r => r.herbCommon) });
     }
 
-    const filtered = interactions.filter((interaction) => {
-      const matchHerb = herbQuery
-        ? interaction.herb.toLowerCase().includes(herbQuery) ||
-          interaction.herbCommon.toLowerCase().includes(herbQuery)
-        : true;
-      const matchDrug = drugQuery ? interaction.drug.toLowerCase().includes(drugQuery) : true;
-      return matchHerb && matchDrug;
+    const where =
+      herbQuery || drugQuery
+        ? {
+            AND: [
+              herbQuery
+                ? {
+                    OR: [
+                      { herbCommon: { contains: herbQuery } },
+                      { herb: { scientificName: { contains: herbQuery } } },
+                    ],
+                  }
+                : {},
+              drugQuery ? { drug: { contains: drugQuery } } : {},
+            ],
+          }
+        : undefined;
+
+    const interactions = await prisma.drugInteraction.findMany({
+      where,
+      take: where ? undefined : 12,
+      orderBy: { herbCommon: 'asc' },
     });
 
-    const uniqueHerbs = Array.from(new Set(filtered.map(i => i.herbCommon)));
-    const uniqueDrugs = Array.from(new Set(filtered.map(i => i.drug)));
+    const [herbs, drugs] = await Promise.all([
+      prisma.drugInteraction.findMany({ distinct: ['herbCommon'], select: { herbCommon: true } }),
+      prisma.drugInteraction.findMany({ distinct: ['drug'], select: { drug: true } }),
+    ]);
 
     return NextResponse.json({
-      data: filtered,
+      data: interactions,
       meta: {
-        total: filtered.length,
-        herbs: uniqueHerbs,
-        drugs: uniqueDrugs,
+        total: interactions.length,
+        herbs: herbs.map(h => h.herbCommon),
+        drugs: drugs.map(d => d.drug),
       },
     });
   } catch (error) {
     console.error('Failed to fetch interactions:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch interactions' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch interactions' }, { status: 500 });
   }
 }

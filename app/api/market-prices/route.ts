@@ -1,68 +1,51 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-import { parseCSVToMarketPrices, MarketPrice } from '../../../lib/market-prices';
+import { prisma } from '@/lib/prisma';
+import { syncMarketPrices } from '@/lib/market-sync';
 
 export const dynamic = 'force-dynamic';
 
-type CachedData = {
-  data: MarketPrice[];
-  meta: {
-    source: 'google_sheets' | 'fallback';
-    fetchedAt: string;
-  };
-};
-
-let cache: CachedData | null = null;
-let lastFetchTime = 0;
-const CACHE_DURATION_MS = 5000;
-
+/**
+ * GET /api/market-prices
+ * Reads from the MarketPrice table (kept fresh by syncMarketPrices(), which
+ * runs on a schedule — see app/api/sync/daily/route.ts and vercel.json).
+ * No more parsing a CSV on every request.
+ */
 export async function GET() {
-  const now = Date.now();
+  try {
+    const prices = await prisma.marketPrice.findMany({
+      include: { herb: { select: { name: true, scientificName: true } } },
+      orderBy: { commonName: 'asc' },
+    });
 
-  if (cache && now - lastFetchTime < CACHE_DURATION_MS) {
-    return NextResponse.json(cache);
+    return NextResponse.json({
+      data: prices.map(p => ({
+        scientificName: p.scientificName,
+        commonName: p.commonName,
+        pricePerKg: p.pricePerKg,
+        currency: p.currency,
+        buyerLocation: p.buyerLocation,
+      })),
+      meta: {
+        source: prices[0]?.source ?? 'none',
+        lastUpdated: prices[0]?.lastUpdated ?? null,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to read market prices:', error);
+    return NextResponse.json({ error: 'Failed to fetch market prices' }, { status: 500 });
   }
+}
 
-  let data: MarketPrice[] = [];
-  let source: 'google_sheets' | 'fallback' = 'fallback';
-
-  const sheetUrl = process.env.GOOGLE_SHEET_CSV_URL;
-
-  if (sheetUrl) {
-    try {
-      const res = await fetch(sheetUrl, { next: { revalidate: 5 }, headers: { 'User-Agent': 'HerbHealCompass/1.0' } });
-      if (res.ok) {
-        const csvText = await res.text();
-        data = parseCSVToMarketPrices(csvText);
-        if (data.length > 0) {
-          source = 'google_sheets';
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch from Google Sheets:', error);
-    }
+/**
+ * POST /api/market-prices — triggers an on-demand sync (also runs on the
+ * daily cron). Protect with CRON_SECRET the same way /api/sync/daily does
+ * if you expose this publicly.
+ */
+export async function POST(req: Request) {
+  const auth = req.headers.get('authorization');
+  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  if (data.length === 0 || source === 'fallback') {
-    try {
-      const fallbackPath = path.join(process.cwd(), 'public', 'data', 'market-prices-fallback.csv');
-      const csvText = await fs.readFile(fallbackPath, 'utf8');
-      data = parseCSVToMarketPrices(csvText);
-      source = 'fallback';
-    } catch (error) {
-      console.error('Failed to read fallback CSV:', error);
-    }
-  }
-
-  cache = {
-    data,
-    meta: {
-      source,
-      fetchedAt: new Date().toISOString()
-    }
-  };
-  lastFetchTime = now;
-
-  return NextResponse.json(cache);
+  const result = await syncMarketPrices();
+  return NextResponse.json({ ok: true, ...result });
 }

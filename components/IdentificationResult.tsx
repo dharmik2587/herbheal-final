@@ -7,10 +7,22 @@ import { parseJsonArray } from '@/lib/helpers';
 interface IdentificationResultProps {
   result: any;
   localMatch: any;
-  insight?: { text: string; provider?: string } | null;
+  insight?: { text: string; provider?: string; model?: string } | null;
+  geminiVision?: {
+    scientificName: string;
+    commonNames: string[];
+    confidence: number;
+    family?: string;
+    ayurvedicUses?: string[];
+    safetyNotes?: string;
+    description?: string;
+    isPlant: boolean;
+    model: string;
+  } | null;
+  identificationSource?: string;
 }
 
-export default function IdentificationResult({ result, localMatch, insight }: IdentificationResultProps) {
+export default function IdentificationResult({ result, localMatch, insight, geminiVision, identificationSource }: IdentificationResultProps) {
   const suggestions = result?.result?.classification?.suggestions || [];
   const diseases = result?.result?.disease?.suggestions || [];
   const isPlant = result?.result?.is_plant?.binary;
@@ -80,6 +92,27 @@ export default function IdentificationResult({ result, localMatch, insight }: Id
               }}>
                 LIVE IDENTIFICATION
               </span>
+              {identificationSource && (
+                <span style={{
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  backgroundColor: identificationSource === 'gemini-vision'
+                    ? 'rgba(0, 188, 212, 0.12)'
+                    : 'rgba(255, 183, 77, 0.12)',
+                  color: identificationSource === 'gemini-vision'
+                    ? 'var(--accent-secondary)'
+                    : 'var(--warning)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  border: `1px solid ${
+                    identificationSource === 'gemini-vision'
+                      ? 'rgba(0,188,212,0.3)'
+                      : 'rgba(255,183,77,0.3)'
+                  }`,
+                }}>
+                  {identificationSource === 'gemini-vision' ? '🧠 Gemini Vision' : '🔴 Plant.id v3'}
+                </span>
+              )}
             </div>
             <h2 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: '24px' }}>
               {topMatch.name}
@@ -257,6 +290,102 @@ export default function IdentificationResult({ result, localMatch, insight }: Id
                   {disease.name} ({Math.round(disease.probability * 100)}%)
                 </span>
               ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Gemini Vision Panel — shown when Gemini Vision ran in parallel */}
+      {geminiVision && geminiVision.isPlant && (
+        <div style={{
+          backgroundColor: 'rgba(0, 188, 212, 0.05)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid rgba(0, 188, 212, 0.2)',
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+            <h3 style={{ margin: 0, color: 'var(--accent-secondary)', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🧠 Gemini Vision Analysis
+              <span style={{
+                padding: '2px 8px', borderRadius: 'var(--radius-full)',
+                backgroundColor: 'rgba(0,188,212,0.1)', fontSize: '10px',
+                fontWeight: 700, color: 'var(--accent-secondary)',
+                border: '1px solid rgba(0,188,212,0.2)'
+              }}>{geminiVision.model}</span>
+            </h3>
+            <span style={{
+              padding: '4px 10px', borderRadius: 'var(--radius-full)',
+              backgroundColor: geminiVision.confidence > 0.7
+                ? 'rgba(76,175,80,0.12)' : geminiVision.confidence > 0.4
+                ? 'rgba(255,183,77,0.12)' : 'rgba(239,83,80,0.12)',
+              color: geminiVision.confidence > 0.7
+                ? 'var(--accent-primary)' : geminiVision.confidence > 0.4
+                ? 'var(--warning)' : 'var(--danger)',
+              fontSize: '13px', fontWeight: 700,
+              border: `1px solid ${
+                geminiVision.confidence > 0.7 ? 'rgba(76,175,80,0.3)'
+                : geminiVision.confidence > 0.4 ? 'rgba(255,183,77,0.3)'
+                : 'rgba(239,83,80,0.3)'
+              }`,
+            }}>{Math.round(geminiVision.confidence * 100)}% confidence</span>
+          </div>
+
+          <div>
+            <p style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontStyle: 'italic', fontSize: '16px', fontWeight: 600 }}>
+              {geminiVision.scientificName}
+            </p>
+            {geminiVision.commonNames.length > 0 && (
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '13px' }}>
+                {geminiVision.commonNames.slice(0, 5).join(' · ')}
+              </p>
+            )}
+            {geminiVision.family && (
+              <span style={{
+                display: 'inline-block', marginTop: '6px',
+                padding: '2px 8px', borderRadius: 'var(--radius-full)',
+                backgroundColor: 'rgba(206,147,216,0.08)',
+                color: 'var(--purple)', fontSize: '11px',
+                border: '1px solid rgba(206,147,216,0.2)'
+              }}>Family: {geminiVision.family}</span>
+            )}
+          </div>
+
+          {geminiVision.description && (
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.7, borderLeft: '3px solid rgba(0,188,212,0.4)', paddingLeft: '10px' }}>
+              {geminiVision.description}
+            </p>
+          )}
+
+          {geminiVision.ayurvedicUses && geminiVision.ayurvedicUses.length > 0 && (
+            <div>
+              <p style={{ margin: '0 0 6px 0', color: 'var(--text-muted)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ayurvedic Uses</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {geminiVision.ayurvedicUses.map((use, i) => (
+                  <span key={i} style={{
+                    padding: '3px 10px', borderRadius: 'var(--radius-full)',
+                    backgroundColor: 'rgba(76,175,80,0.08)',
+                    color: 'var(--accent-primary)', fontSize: '12px',
+                    border: '1px solid rgba(76,175,80,0.2)'
+                  }}>{use}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {geminiVision.safetyNotes && (
+            <div style={{
+              padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'rgba(255,183,77,0.06)',
+              border: '1px solid rgba(255,183,77,0.2)',
+              display: 'flex', gap: '8px', alignItems: 'flex-start'
+            }}>
+              <span style={{ fontSize: '16px', flexShrink: 0 }}>⚠️</span>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.6 }}>
+                <strong style={{ color: 'var(--warning)' }}>Safety: </strong>{geminiVision.safetyNotes}
+              </p>
             </div>
           )}
         </div>

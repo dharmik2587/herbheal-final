@@ -141,3 +141,32 @@ call the same protected endpoint, so pick whichever fits your plan.
   well under both.
 - Vercel's Hobby plan only allows daily crons; the GitHub Actions fallback
   works on any plan and is what's actually recommended if you're not on Pro.
+
+## Changes in this pass
+
+1. **Security fix — hardcoded Firebase key removed.** `lib/firebase.ts` and
+   `lib/external-services.ts` had a live Firebase API key baked in as a
+   fallback default, committed to this public repo. That's now removed;
+   both files throw a clear error if the required env vars aren't set,
+   instead of silently falling back to a (now-compromised) key. **Rotate
+   that key in the Firebase console** if you haven't already — anyone who's
+   viewed this repo's history has had access to it.
+2. **`interactions` and `market-prices` are no longer hardcoded.** New
+   Prisma models `DrugInteraction` and `MarketPrice` replace
+   `public/data/interactions.json` and `public/data/market-prices-fallback.csv`
+   as the source of truth. Run `npx prisma db push` then
+   `npm run db:seed:dynamic` to migrate the existing data in. `lib/market-sync.ts`
+   is what keeps `MarketPrice` fresh from Google Sheets (or the fallback CSV)
+   going forward — wire it into the existing daily-sync cron, or call
+   `POST /api/market-prices` with the `CRON_SECRET` bearer token.
+3. **Swappable custom-model identification path.** `lib/plant-id.ts` now
+   exposes `identifyPlantWithStrategy()`, controlled by `IDENTIFY_STRATEGY`
+   (`api` | `custom-first` | `custom-only`). The `/ml` folder has a full
+   PyTorch transfer-learning pipeline (train/evaluate/serve) matching the
+   contract `lib/custom-model.ts` expects — see `ml/README.md` for honest
+   guidance on how much photo data you actually need before trusting a
+   >90% accuracy claim.
+4. **`firestore.rules` added.** There was no rules file in this repo at all,
+   which most likely means the Firestore project is running on open
+   test-mode rules. The new rules lock writes to the specific fields the
+   app actually sends and deny everything else by default.

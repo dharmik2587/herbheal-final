@@ -3,22 +3,44 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { addDoc, collection, getFirestore, serverTimestamp, getDocs, query, orderBy, limit } from 'firebase/firestore';
 
-// Client-side Firebase config using NEXT_PUBLIC_ vars (required for browser access in Next.js)
+// Client-side Firebase config using NEXT_PUBLIC_ vars (required for browser access in Next.js).
+// NOTE: there used to be hardcoded fallback values here. That key was committed to a public
+// repo and must be treated as burned — rotate it in the Firebase console, then only ever
+// supply config via env vars. No fallback literals, on purpose.
+const requiredEnv = [
+  'NEXT_PUBLIC_FIREBASE_API_KEY',
+  'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+  'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+  'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+  'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+  'NEXT_PUBLIC_FIREBASE_APP_ID',
+] as const;
+
+function assertFirebaseEnv() {
+  const missing = requiredEnv.filter((key) => !process.env[key]);
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing Firebase env vars: ${missing.join(', ')}. Set them in .env.local — see .env.example.`
+    );
+  }
+}
+
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDoPPif0_BO8SkI0KOp0N1mDH_drXo0R0M',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'herbheal.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'herbheal',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'herbheal.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '164989073404',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:164989073404:web:ef4a2de51f1ebfcc946479',
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-B5XR8ZF9XW',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 let firebaseApp: ReturnType<typeof initializeApp> | null = null;
 
 function getFirebaseApp() {
   if (!firebaseApp) {
-    firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    assertFirebaseEnv();
+    firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as Record<string, string>);
   }
   return firebaseApp;
 }

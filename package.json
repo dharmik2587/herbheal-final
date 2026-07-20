@@ -8,6 +8,7 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:dynamic": "tsx scripts/seed-dynamic-data.ts",
     "db:sync": "tsx -e \"import('./lib/daily-sync').then(m => m.runDailySync())\"",
     "postinstall": "prisma generate"
   },

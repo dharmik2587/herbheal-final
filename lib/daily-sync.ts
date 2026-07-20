@@ -15,6 +15,7 @@ export interface SyncSummary {
   fieldsUpdated: number;
   researchLogsAdded: number;
   errors: { herb: string; message: string }[];
+  marketPrices?: { updated: number; source: string };
 }
 
 export async function runDailySync(): Promise<SyncSummary> {
@@ -92,6 +93,18 @@ export async function runDailySync(): Promise<SyncSummary> {
     `🎉 Daily sync finished: ${summary.herbsProcessed} herbs, ` +
       `${summary.researchLogsAdded} new research logs, ${summary.errors.length} errors`
   );
+
+  // Runs on the same cron as the herb enrichment above, instead of needing
+  // a second scheduled trigger — one vercel.json cron entry covers both.
+  try {
+    const { syncMarketPrices } = await import('./market-sync');
+    summary.marketPrices = await syncMarketPrices();
+    console.log(
+      `💰 Market prices synced: ${summary.marketPrices.updated} updated (source: ${summary.marketPrices.source})`
+    );
+  } catch (err) {
+    console.error('⚠️ Market price sync failed:', err);
+  }
 
   return summary;
 }

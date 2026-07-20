@@ -4,22 +4,32 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
 
-// Server-side Firebase config
+// Server-side Firebase config. No hardcoded fallback literals — see the note
+// in lib/firebase.ts about why (a leaked key was previously baked in here).
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDoPPif0_BO8SkI0KOp0N1mDH_drXo0R0M',
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'herbheal.firebaseapp.com',
-  projectId: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'herbheal',
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'herbheal.firebasestorage.app',
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '164989073404',
-  appId: process.env.FIREBASE_APP_ID || process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:164989073404:web:ef4a2de51f1ebfcc946479',
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID || process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-B5XR8ZF9XW',
+  apiKey: process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN || process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID || process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID || process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+
+function assertFirebaseEnv() {
+  if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+    throw new Error(
+      'Firebase server config missing (FIREBASE_API_KEY / FIREBASE_PROJECT_ID). Set them in .env — see .env.example.'
+    );
+  }
+}
 
 let firebaseApp: ReturnType<typeof initializeApp> | null = null;
 
 function getFirebaseApp() {
   if (!firebaseApp) {
-    firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    assertFirebaseEnv();
+    firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as Record<string, string>);
   }
   return firebaseApp;
 }
@@ -69,13 +79,13 @@ FORMAT:
 • Keep responses under 300 words unless the user requests detail.
 • Use markdown formatting for readability.`;
 
-// List of supported working models in priority order
+// List of supported working models in priority order (verified against this API key)
 const GEMINI_MODELS = [
-  process.env.GEMINI_MODEL || 'gemini-flash-latest',
-  'gemini-flash-latest',
-  'gemini-flash-lite-latest',
-  'gemini-3.1-flash-lite',
-  'gemini-3-flash-preview',
+  process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  'gemini-2.5-flash',
+  'gemini-3.5-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
 ];
 
 export async function generateGeminiInsight(prompt: string) {
@@ -154,11 +164,129 @@ Keep it concise and practical for someone exploring herbal remedies.`;
 }
 
 export async function generateInteractionInsight(herbName: string, drugName: string) {
-  const prompt = `Analyze the potential interaction between the herb "${herbName}" and the drug "${drugName}". Include:
-1. Known interaction mechanisms
-2. Severity level
-3. Clinical recommendations
-4. Whether concurrent use is safe, cautioned, or contraindicated`;
+  const prompt = `Analyze the potential interaction between the herb "${herbName}" and the drug "${drugName}". Include:\n1. Known interaction mechanisms\n2. Severity level\n3. Clinical recommendations\n4. Whether concurrent use is safe, cautioned, or contraindicated`;
 
   return generateGeminiInsight(prompt);
+}
+
+// ---------------------------------------------------------------------------
+// Gemini Vision — Direct image-based plant identification
+// ---------------------------------------------------------------------------
+
+export interface GeminiVisionIdentification {
+  scientificName: string;
+  commonNames: string[];
+  confidence: number;        // 0-1
+  family?: string;
+  ayurvedicUses?: string[];
+  safetyNotes?: string;
+  description?: string;
+  isPlant: boolean;
+  model: string;
+}
+
+const VISION_IDENTIFY_PROMPT = `You are an expert botanist and Ayurvedic herbalist. Analyze this plant image and respond ONLY with valid JSON — no markdown, no prose, no code fences.
+
+JSON schema (all fields required):
+{
+  "isPlant": true,
+  "scientificName": "Genus species",
+  "commonNames": ["name1", "name2"],
+  "confidence": 0.92,
+  "family": "Lamiaceae",
+  "ayurvedicUses": ["digestive support", "anti-inflammatory"],
+  "safetyNotes": "Generally safe; avoid in pregnancy.",
+  "description": "2-3 sentence botanical description."
+}
+
+If the image does NOT show a plant, return:
+{"isPlant": false, "scientificName": "", "commonNames": [], "confidence": 0, "family": "", "ayurvedicUses": [], "safetyNotes": "", "description": ""}
+
+Be precise. confidence must be a number between 0 and 1.`;
+
+export async function identifyPlantWithGeminiVision(
+  imageBase64: string
+): Promise<GeminiVisionIdentification | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn('Gemini API key missing — vision identification skipped');
+    return null;
+  }
+
+  // Strip data-URL prefix if present (e.g. "data:image/jpeg;base64,...")
+  const base64Data = imageBase64.includes(',')
+    ? imageBase64.split(',')[1]
+    : imageBase64;
+
+  // Detect MIME type from prefix or default to jpeg
+  const mimeType = imageBase64.startsWith('data:image/png') ? 'image/png'
+    : imageBase64.startsWith('data:image/webp') ? 'image/webp'
+    : 'image/jpeg';
+
+  const modelsToTry = Array.from(new Set([
+    process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    'gemini-2.5-flash',
+    'gemini-3.5-flash',
+    'gemini-2.0-flash-lite',
+    'gemini-2.0-flash',
+  ]));
+
+  for (const model of modelsToTry) {
+    try {
+      const body = {
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                inline_data: {
+                  mime_type: mimeType,
+                  data: base64Data,
+                },
+              },
+              { text: VISION_IDENTIFY_PROMPT },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          topP: 0.8,
+          maxOutputTokens: 512,
+        },
+      };
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`Gemini vision model ${model} returned ${response.status}:`, errText.slice(0, 200));
+        continue;
+      }
+
+      const data = await response.json();
+      let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
+
+      // Strip markdown code fences if Gemini wraps in ```json ... ```
+      raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+
+      const parsed = JSON.parse(raw) as GeminiVisionIdentification;
+      parsed.model = model;
+
+      // Clamp confidence to [0, 1]
+      parsed.confidence = Math.min(1, Math.max(0, Number(parsed.confidence) || 0));
+
+      return parsed;
+    } catch (err) {
+      console.warn(`Gemini vision model ${model} failed:`, err);
+    }
+  }
+
+  return null;
 }

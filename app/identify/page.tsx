@@ -11,8 +11,20 @@ export default function IdentifyPage() {
   const [resultData, setResultData] = useState<{
     result: any;
     localMatch: any;
-    insight?: { text: string; provider?: string } | null;
+    insight?: { text: string; provider?: string; model?: string } | null;
     marketPrice?: { pricePerKg: number; currency: string; buyerLocation: string } | null;
+    identificationSource?: string;
+    geminiVision?: {
+      scientificName: string;
+      commonNames: string[];
+      confidence: number;
+      family?: string;
+      ayurvedicUses?: string[];
+      safetyNotes?: string;
+      description?: string;
+      isPlant: boolean;
+      model: string;
+    } | null;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showSafety, setShowSafety] = useState(false);
@@ -125,6 +137,8 @@ export default function IdentifyPage() {
               result={resultData.result}
               localMatch={resultData.localMatch}
               insight={resultData.insight}
+              geminiVision={resultData.geminiVision}
+              identificationSource={resultData.identificationSource}
             />
 
             {/* Conservation Badge Section */}
