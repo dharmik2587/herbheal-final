@@ -1,0 +1,137 @@
+[
+  {
+    "scientificName": "Santalum album",
+    "commonName": "Indian Sandalwood",
+    "iucnStatus": "Vulnerable",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Regulated under Indian Biological Diversity Act, 2002. Commercial harvesting requires prior approval from National Biodiversity Authority.",
+    "harvestRestriction": "Government-controlled harvesting only in Karnataka, Tamil Nadu, Kerala"
+  },
+  {
+    "scientificName": "Aquilaria malaccensis",
+    "commonName": "Agarwood",
+    "iucnStatus": "Critically Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Listed as Critically Endangered. International trade requires CITES permit.",
+    "harvestRestriction": "Wild harvesting prohibited. Plantation cultivation allowed with permits."
+  },
+  {
+    "scientificName": "Rauvolfia serpentina",
+    "commonName": "Sarpagandha",
+    "iucnStatus": "Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Protected under Wildlife Protection Act. Export of raw material banned.",
+    "harvestRestriction": "Collection from wild prohibited without government license"
+  },
+  {
+    "scientificName": "Nardostachys jatamansi",
+    "commonName": "Jatamansi / Spikenard",
+    "iucnStatus": "Critically Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Critically endangered alpine herb. Included in negative list for export.",
+    "harvestRestriction": "Wild collection banned. Cultivation being promoted in Uttarakhand."
+  },
+  {
+    "scientificName": "Picrorhiza kurroa",
+    "commonName": "Kutki",
+    "iucnStatus": "Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "High-altitude Himalayan species under severe collection pressure.",
+    "harvestRestriction": "Regulated harvesting. Commercial collection requires forest department permit."
+  },
+  {
+    "scientificName": "Taxus wallichiana",
+    "commonName": "Himalayan Yew",
+    "iucnStatus": "Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Source of taxol (anti-cancer). Protected under multiple Indian and international laws.",
+    "harvestRestriction": "Bark stripping and felling prohibited. Only fallen/pruned material permitted."
+  },
+  {
+    "scientificName": "Dactylorhiza hatagirea",
+    "commonName": "Salam Panja",
+    "iucnStatus": "Critically Endangered",
+    "cites": "Appendix II",
+    "biodiversityAct": true,
+    "biodiversityActNote": "Himalayan orchid used in Unani medicine. Severely over-collected.",
+    "harvestRestriction": "Collection completely prohibited in most states"
+  },
+  {
+    "scientificName": "Commiphora wightii",
+    "commonName": "Guggul",
+    "iucnStatus": "Critically Endangered",
+    "cites": null,
+    "biodiversityAct": true,
+    "biodiversityActNote": "Listed as Critically Endangered by IUCN. Rajasthan populations severely depleted.",
+    "harvestRestriction": "Wild tapping banned in most states. Only plantation-sourced material permitted."
+  },
+  {
+    "scientificName": "Gloriosa superba",
+    "commonName": "Glory Lily / Kalihari",
+    "iucnStatus": "Vulnerable",
+    "cites": null,
+    "biodiversityAct": true,
+    "biodiversityActNote": "Regulated due to commercial demand for colchicine extraction.",
+    "harvestRestriction": "Wild collection restricted. Cultivation encouraged in Tamil Nadu and Odisha."
+  },
+  {
+    "scientificName": "Swertia chirayita",
+    "commonName": "Chirayata",
+    "iucnStatus": "Vulnerable",
+    "cites": null,
+    "biodiversityAct": true,
+    "biodiversityActNote": "Over-harvested from Eastern Himalayas. Included in priority species for conservation.",
+    "harvestRestriction": "Sustainable harvesting protocols mandatory in Sikkim and Darjeeling."
+  },
+  {
+    "scientificName": "Curcuma longa",
+    "commonName": "Turmeric",
+    "iucnStatus": "Least Concern",
+    "cites": null,
+    "biodiversityAct": false,
+    "biodiversityActNote": null,
+    "harvestRestriction": null
+  },
+  {
+    "scientificName": "Azadirachta indica",
+    "commonName": "Neem",
+    "iucnStatus": "Least Concern",
+    "cites": null,
+    "biodiversityAct": false,
+    "biodiversityActNote": null,
+    "harvestRestriction": null
+  },
+  {
+    "scientificName": "Withania somnifera",
+    "commonName": "Ashwagandha",
+    "iucnStatus": "Least Concern",
+    "cites": null,
+    "biodiversityAct": false,
+    "biodiversityActNote": null,
+    "harvestRestriction": null
+  },
+  {
+    "scientificName": "Ocimum tenuiflorum",
+    "commonName": "Tulsi / Holy Basil",
+    "iucnStatus": "Least Concern",
+    "cites": null,
+    "biodiversityAct": false,
+    "biodiversityActNote": null,
+    "harvestRestriction": null
+  },
+  {
+    "scientificName": "Tinospora cordifolia",
+    "commonName": "Giloy / Guduchi",
+    "iucnStatus": "Least Concern",
+    "cites": null,
+    "biodiversityAct": false,
+    "biodiversityActNote": null,
+    "harvestRestriction": null
+  }
+]

@@ -1,0 +1,252 @@
+[
+  {
+    "herb": "Ginkgo biloba",
+    "herbCommon": "Ginkgo",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "severe",
+    "risk": "Increased bleeding risk due to additive anticoagulant effects",
+    "mechanism": "Ginkgo inhibits platelet-activating factor (PAF) and may potentiate warfarin's anticoagulant activity",
+    "recommendation": "Avoid concurrent use. If combined, monitor INR closely and watch for signs of bleeding."
+  },
+  {
+    "herb": "Ginkgo biloba",
+    "herbCommon": "Ginkgo",
+    "drug": "Aspirin",
+    "drugClass": "NSAID / Antiplatelet",
+    "severity": "severe",
+    "risk": "Increased bleeding risk including spontaneous hemorrhage",
+    "mechanism": "Both agents inhibit platelet aggregation through different mechanisms, creating additive effect",
+    "recommendation": "Avoid combination. Case reports of spontaneous hyphema and subdural hematoma."
+  },
+  {
+    "herb": "Hypericum perforatum",
+    "herbCommon": "St. John's Wort",
+    "drug": "Sertraline",
+    "drugClass": "SSRI Antidepressant",
+    "severity": "severe",
+    "risk": "Serotonin syndrome — potentially life-threatening",
+    "mechanism": "St. John's Wort inhibits serotonin reuptake, causing additive serotonergic effects with SSRIs",
+    "recommendation": "Contraindicated. Do not combine with any SSRI. Taper one before starting the other."
+  },
+  {
+    "herb": "Hypericum perforatum",
+    "herbCommon": "St. John's Wort",
+    "drug": "Fluoxetine",
+    "drugClass": "SSRI Antidepressant",
+    "severity": "severe",
+    "risk": "Serotonin syndrome — agitation, tremor, hyperthermia",
+    "mechanism": "Additive serotonergic activity from dual reuptake inhibition",
+    "recommendation": "Contraindicated. Choose one treatment modality."
+  },
+  {
+    "herb": "Hypericum perforatum",
+    "herbCommon": "St. John's Wort",
+    "drug": "Cyclosporine",
+    "drugClass": "Immunosuppressant",
+    "severity": "severe",
+    "risk": "Reduced cyclosporine levels leading to transplant rejection",
+    "mechanism": "St. John's Wort induces CYP3A4 and P-glycoprotein, accelerating cyclosporine metabolism",
+    "recommendation": "Absolutely contraindicated in transplant patients. Multiple cases of acute rejection reported."
+  },
+  {
+    "herb": "Hypericum perforatum",
+    "herbCommon": "St. John's Wort",
+    "drug": "Oral Contraceptives",
+    "drugClass": "Hormonal Contraceptive",
+    "severity": "moderate",
+    "risk": "Breakthrough bleeding and reduced contraceptive efficacy",
+    "mechanism": "CYP3A4 induction increases metabolism of ethinyl estradiol and progestins",
+    "recommendation": "Use additional barrier contraception or choose alternative antidepressant."
+  },
+  {
+    "herb": "Curcuma longa",
+    "herbCommon": "Turmeric",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "moderate",
+    "risk": "Enhanced anticoagulant effect and increased bleeding risk",
+    "mechanism": "Curcumin inhibits platelet aggregation and may inhibit thromboxane synthase",
+    "recommendation": "Monitor INR closely. Avoid high-dose curcumin supplements while on warfarin."
+  },
+  {
+    "herb": "Curcuma longa",
+    "herbCommon": "Turmeric",
+    "drug": "Metformin",
+    "drugClass": "Antidiabetic (Biguanide)",
+    "severity": "mild",
+    "risk": "Additive blood glucose lowering — risk of hypoglycemia",
+    "mechanism": "Curcumin may enhance insulin sensitivity and reduce hepatic glucose production",
+    "recommendation": "Monitor blood glucose more frequently. Adjust metformin dose if needed."
+  },
+  {
+    "herb": "Withania somnifera",
+    "herbCommon": "Ashwagandha",
+    "drug": "Levothyroxine",
+    "drugClass": "Thyroid Hormone",
+    "severity": "moderate",
+    "risk": "May increase thyroid hormone levels excessively",
+    "mechanism": "Ashwagandha stimulates thyroid activity and may increase T3/T4 production",
+    "recommendation": "Monitor thyroid function tests. May need dose adjustment of levothyroxine."
+  },
+  {
+    "herb": "Withania somnifera",
+    "herbCommon": "Ashwagandha",
+    "drug": "Diazepam",
+    "drugClass": "Benzodiazepine / Sedative",
+    "severity": "moderate",
+    "risk": "Excessive sedation and CNS depression",
+    "mechanism": "Ashwagandha has GABAergic activity that may potentiate benzodiazepine effects",
+    "recommendation": "Use with caution. Reduce sedative dose if combining. Avoid alcohol."
+  },
+  {
+    "herb": "Withania somnifera",
+    "herbCommon": "Ashwagandha",
+    "drug": "Immunosuppressants",
+    "drugClass": "Immunosuppressant",
+    "severity": "moderate",
+    "risk": "May counteract immunosuppressive therapy",
+    "mechanism": "Ashwagandha has immunostimulatory properties that may oppose immunosuppression",
+    "recommendation": "Avoid in transplant patients or autoimmune conditions requiring immunosuppression."
+  },
+  {
+    "herb": "Panax ginseng",
+    "herbCommon": "Ginseng",
+    "drug": "Insulin",
+    "drugClass": "Antidiabetic",
+    "severity": "moderate",
+    "risk": "Additive hypoglycemic effect",
+    "mechanism": "Ginsenosides enhance insulin secretion and improve insulin sensitivity",
+    "recommendation": "Monitor blood glucose closely. May need to reduce insulin dose."
+  },
+  {
+    "herb": "Panax ginseng",
+    "herbCommon": "Ginseng",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "moderate",
+    "risk": "Reduced anticoagulant effectiveness",
+    "mechanism": "Ginseng may have antiplatelet properties that paradoxically reduce warfarin's INR effect",
+    "recommendation": "Monitor INR closely. Avoid concurrent use if possible."
+  },
+  {
+    "herb": "Valeriana officinalis",
+    "herbCommon": "Valerian",
+    "drug": "Lorazepam",
+    "drugClass": "Benzodiazepine / Sedative",
+    "severity": "moderate",
+    "risk": "Excessive sedation, impaired motor function",
+    "mechanism": "Valerian acts on GABA-A receptors, potentiating benzodiazepine sedation",
+    "recommendation": "Avoid combination or use reduced doses. Do not drive or operate machinery."
+  },
+  {
+    "herb": "Valeriana officinalis",
+    "herbCommon": "Valerian",
+    "drug": "Zolpidem",
+    "drugClass": "Sedative-Hypnotic",
+    "severity": "moderate",
+    "risk": "Excessive drowsiness and next-day impairment",
+    "mechanism": "Both act on GABA receptors, creating additive CNS depression",
+    "recommendation": "Do not combine. Choose one sleep aid."
+  },
+  {
+    "herb": "Glycyrrhiza glabra",
+    "herbCommon": "Licorice",
+    "drug": "Digoxin",
+    "drugClass": "Cardiac Glycoside",
+    "severity": "severe",
+    "risk": "Hypokalemia increasing risk of digoxin toxicity and fatal arrhythmia",
+    "mechanism": "Glycyrrhizin causes pseudoaldosteronism with potassium depletion, sensitizing heart to digoxin",
+    "recommendation": "Contraindicated. Avoid licorice root (not deglycyrrhizinated form) with digoxin."
+  },
+  {
+    "herb": "Glycyrrhiza glabra",
+    "herbCommon": "Licorice",
+    "drug": "Hydrochlorothiazide",
+    "drugClass": "Thiazide Diuretic",
+    "severity": "moderate",
+    "risk": "Severe hypokalemia",
+    "mechanism": "Both licorice and thiazides deplete potassium through different mechanisms",
+    "recommendation": "Monitor potassium levels closely. Supplement potassium if combining."
+  },
+  {
+    "herb": "Allium sativum",
+    "herbCommon": "Garlic",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "moderate",
+    "risk": "Increased bleeding risk",
+    "mechanism": "Garlic inhibits platelet aggregation via ajoene and allicin, adding to warfarin's effect",
+    "recommendation": "Monitor INR. Avoid high-dose garlic supplements while on anticoagulants."
+  },
+  {
+    "herb": "Allium sativum",
+    "herbCommon": "Garlic",
+    "drug": "Saquinavir",
+    "drugClass": "HIV Protease Inhibitor",
+    "severity": "severe",
+    "risk": "Significantly reduced saquinavir plasma levels",
+    "mechanism": "Garlic induces CYP3A4 and intestinal P-glycoprotein, reducing drug absorption",
+    "recommendation": "Avoid garlic supplements with protease inhibitors. Risk of treatment failure."
+  },
+  {
+    "herb": "Piper nigrum",
+    "herbCommon": "Black Pepper (Piperine)",
+    "drug": "Phenytoin",
+    "drugClass": "Anticonvulsant",
+    "severity": "moderate",
+    "risk": "Increased phenytoin blood levels and toxicity risk",
+    "mechanism": "Piperine inhibits CYP3A4 and CYP2C9, slowing phenytoin metabolism",
+    "recommendation": "Monitor phenytoin levels. Avoid high-dose piperine/bioperine supplements."
+  },
+  {
+    "herb": "Zingiber officinale",
+    "herbCommon": "Ginger",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "mild",
+    "risk": "Theoretically increased bleeding risk",
+    "mechanism": "Ginger may inhibit thromboxane synthase, affecting platelet aggregation",
+    "recommendation": "Culinary amounts are likely safe. Avoid concentrated ginger supplements with anticoagulants."
+  },
+  {
+    "herb": "Cinnamomum verum",
+    "herbCommon": "Cinnamon",
+    "drug": "Metformin",
+    "drugClass": "Antidiabetic (Biguanide)",
+    "severity": "mild",
+    "risk": "Additive blood glucose lowering effect",
+    "mechanism": "Cinnamon may improve insulin sensitivity and reduce fasting glucose",
+    "recommendation": "Monitor blood glucose. Beneficial in some cases but adjust medications accordingly."
+  },
+  {
+    "herb": "Azadirachta indica",
+    "herbCommon": "Neem",
+    "drug": "Metformin",
+    "drugClass": "Antidiabetic (Biguanide)",
+    "severity": "mild",
+    "risk": "Additive hypoglycemic effect",
+    "mechanism": "Neem leaf extract may reduce blood glucose through multiple mechanisms",
+    "recommendation": "Monitor blood glucose closely when using neem supplements with antidiabetics."
+  },
+  {
+    "herb": "Tinospora cordifolia",
+    "herbCommon": "Giloy / Guduchi",
+    "drug": "Immunosuppressants",
+    "drugClass": "Immunosuppressant",
+    "severity": "moderate",
+    "risk": "May counteract immunosuppressive effects",
+    "mechanism": "Giloy is a potent immunomodulator that activates macrophages and lymphocytes",
+    "recommendation": "Avoid in transplant patients or those on immunosuppressive therapy."
+  },
+  {
+    "herb": "Ocimum tenuiflorum",
+    "herbCommon": "Tulsi / Holy Basil",
+    "drug": "Warfarin",
+    "drugClass": "Anticoagulant",
+    "severity": "mild",
+    "risk": "May slightly enhance anticoagulant effect",
+    "mechanism": "Eugenol in tulsi has mild antiplatelet activity",
+    "recommendation": "Monitor INR. Culinary use is likely safe; avoid concentrated extracts."
+  }
+]

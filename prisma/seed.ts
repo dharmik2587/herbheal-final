@@ -19,12 +19,12 @@ interface SeedHerb {
   symptoms: SeedSymptom[];
 }
 
-const herbsData: SeedHerb[] = [
+const baseHerbsData: SeedHerb[] = [
   {
     name: 'Ashwagandha',
     scientificName: 'Withania somnifera',
     description:
-      'An ancient adaptogenic herb used in Ayurveda for over 3,000 years. Ashwagandha is renowned for its ability to help the body resist physiological and psychological stress. It supports vitality, cognitive function, and overall well-being by modulating cortisol levels and enhancing the body\'s resilience to daily stressors.',
+      'An adaptogenic herb used in Ayurveda for stress resilience, vitality, and cognitive support.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Withania_somnifera_at_Talakona_forest%2C_AP_W2_IMG_8852.jpg/440px-Withania_somnifera_at_Talakona_forest%2C_AP_W2_IMG_8852.jpg',
     ayurvedicProperties: ['Rasayana', 'Adaptogen'],
     taste: ['Bitter', 'Sweet'],
@@ -37,14 +37,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Stress', strength: 9 },
       { name: 'Anxiety', strength: 8 },
       { name: 'Fatigue', strength: 7 },
-      { name: 'Insomnia', strength: 6 },
     ],
   },
   {
     name: 'Turmeric',
     scientificName: 'Curcuma longa',
     description:
-      'A warming anti-inflammatory rhizome that is central to both Ayurvedic medicine and Indian cuisine. Turmeric\'s primary active compound, curcumin, has been extensively studied for its potent anti-inflammatory, antioxidant, and neuroprotective properties. It supports joint health, liver function, and digestive wellness.',
+      'A warming spice and medicinal rhizome renowned for anti-inflammatory and antioxidant activity.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Curcuma_longa_roots.jpg/440px-Curcuma_longa_roots.jpg',
     ayurvedicProperties: ['Anti-inflammatory', 'Antioxidant'],
     taste: ['Bitter', 'Pungent'],
@@ -63,7 +62,7 @@ const herbsData: SeedHerb[] = [
     name: 'Holy Basil (Tulsi)',
     scientificName: 'Ocimum sanctum',
     description:
-      'Revered as the "Queen of Herbs" in Ayurveda, Holy Basil (Tulsi) is a sacred adaptogenic plant with a long history of use in Indian traditional medicine. It supports respiratory health, strengthens the immune system, and helps the body adapt to environmental and emotional stress. Tulsi is also valued for its antimicrobial and antioxidant properties.',
+      'A sacred adaptogenic herb used for respiratory health, immunity, and stress balance.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Ocimum_tenuiflorum_%28Tulsi%29_in_Narsapur%2C_AP_W_IMG_1125.jpg/440px-Ocimum_tenuiflorum_%28Tulsi%29_in_Narsapur%2C_AP_W_IMG_1125.jpg',
     ayurvedicProperties: ['Adaptogen', 'Immunomodulator'],
     taste: ['Pungent', 'Bitter'],
@@ -76,14 +75,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Cold', strength: 7 },
       { name: 'Cough', strength: 7 },
       { name: 'Stress', strength: 6 },
-      { name: 'Fever', strength: 5 },
     ],
   },
   {
     name: 'Brahmi',
     scientificName: 'Bacopa monnieri',
     description:
-      'A powerful brain tonic used in Ayurveda for centuries to enhance memory, concentration, and cognitive function. Brahmi is classified as a Medhya Rasayana — a rejuvenative for the mind. It supports neuronal communication, reduces anxiety, and helps manage symptoms of ADHD and brain fog. Modern research confirms its neuroprotective and antioxidant effects.',
+      'A cognitive-support herb valued for memory, focus, and calm mental clarity.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Bacopa_monnieri_in_Hyderabad%2C_AP_W_IMG_0314.jpg/440px-Bacopa_monnieri_in_Hyderabad%2C_AP_W_IMG_0314.jpg',
     ayurvedicProperties: ['Medhya Rasayana', 'Nootropic'],
     taste: ['Bitter', 'Sweet'],
@@ -95,34 +93,14 @@ const herbsData: SeedHerb[] = [
     symptoms: [
       { name: 'Memory Loss', strength: 9 },
       { name: 'Anxiety', strength: 7 },
-      { name: 'ADHD', strength: 6 },
       { name: 'Brain Fog', strength: 8 },
-    ],
-  },
-  {
-    name: 'Triphala',
-    scientificName: 'Traditional blend (Amalaki, Bibhitaki, Haritaki)',
-    description:
-      'A cornerstone polyherbal formula in Ayurveda composed of three fruits: Amalaki, Bibhitaki, and Haritaki. Triphala is celebrated for its gentle yet effective digestive cleansing properties. It balances all three doshas and is used to promote regular bowel movements, reduce bloating, and support overall gastrointestinal health. It also has antioxidant and anti-inflammatory properties.',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Terminalia_chebula_%28Myrobalan%29_in_Hyderabad_W_IMG_4633.jpg/440px-Terminalia_chebula_%28Myrobalan%29_in_Hyderabad_W_IMG_4633.jpg',
-    ayurvedicProperties: ['Digestive Cleanser', 'Tridoshic'],
-    taste: ['Sweet', 'Sour', 'Pungent', 'Bitter', 'Astringent', 'Salty'],
-    temperature: 'Balanced',
-    doshas: ['Vata', 'Pitta', 'Kapha'],
-    organs: ['Digestive System', 'Colon'],
-    contraindications: ['Pregnancy', 'Diarrhea'],
-    knownCompounds: ['Gallic acid'],
-    symptoms: [
-      { name: 'Constipation', strength: 9 },
-      { name: 'Bloating', strength: 7 },
-      { name: 'Digestive Issues', strength: 8 },
     ],
   },
   {
     name: 'Neem',
     scientificName: 'Azadirachta indica',
     description:
-      'Known as the "Village Pharmacy" in India, Neem is one of the most versatile medicinal trees in Ayurveda. Its intensely bitter leaves, bark, and oil are used for blood purification, skin disorders, and as a natural antimicrobial. Neem supports detoxification, helps manage acne and skin infections, and has been traditionally used to reduce fevers.',
+      'A bitter medicinal tree used for skin wellness, blood purification, and microbial balance.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Neem_%28Azadirachta_indica%29_in_Hyderabad_W_IMG_6976.jpg/440px-Neem_%28Azadirachta_indica%29_in_Hyderabad_W_IMG_6976.jpg',
     ayurvedicProperties: ['Blood Purifier', 'Antimicrobial'],
     taste: ['Bitter'],
@@ -135,33 +113,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Skin Issues', strength: 9 },
       { name: 'Acne', strength: 8 },
       { name: 'Infections', strength: 7 },
-      { name: 'Fever', strength: 5 },
-    ],
-  },
-  {
-    name: 'Shatavari',
-    scientificName: 'Asparagus racemosus',
-    description:
-      'Known as the "Queen of Herbs" for women\'s health, Shatavari is a premier rejuvenative in Ayurveda. Its name translates to "she who possesses a hundred husbands," reflecting its traditional use in supporting female reproductive health. Shatavari nourishes and balances hormones, supports lactation, soothes the digestive tract, and provides adaptogenic benefits for stress management.',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Asparagus_racemosus_-_Talakona_forest%2C_AP%2C_India.jpg/440px-Asparagus_racemosus_-_Talakona_forest%2C_AP%2C_India.jpg',
-    ayurvedicProperties: ['Rasayana', 'Female Rejuvenative'],
-    taste: ['Sweet', 'Bitter'],
-    temperature: 'Cool',
-    doshas: ['Vata', 'Pitta'],
-    organs: ['Reproductive System', 'Digestive System'],
-    contraindications: ['Kidney disorders', 'Hormone-sensitive conditions'],
-    knownCompounds: ['Shatavarin'],
-    symptoms: [
-      { name: 'Hormonal Imbalance', strength: 9 },
-      { name: 'Fatigue', strength: 7 },
-      { name: 'Digestive Issues', strength: 6 },
     ],
   },
   {
     name: 'Ginger (Shunthi)',
     scientificName: 'Zingiber officinale',
     description:
-      'Called "Vishwabhesaj" (universal remedy) in Ayurveda, Ginger has been used for millennia across cultures as both a culinary spice and a medicinal root. Its warming, pungent nature makes it excellent for stimulating digestion (Agni), relieving nausea, easing cold symptoms, and reducing inflammation. Both fresh (Ardrakam) and dried (Shunthi) forms are used therapeutically.',
+      'A warming digestive herb used for nausea, cold relief, and inflammation support.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Ginger_in_Bangladesh.jpg/440px-Ginger_in_Bangladesh.jpg',
     ayurvedicProperties: ['Digestive Stimulant', 'Carminative'],
     taste: ['Pungent'],
@@ -174,14 +132,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Nausea', strength: 9 },
       { name: 'Cold', strength: 7 },
       { name: 'Inflammation', strength: 6 },
-      { name: 'Digestive Issues', strength: 8 },
     ],
   },
   {
     name: 'Amla (Indian Gooseberry)',
     scientificName: 'Phyllanthus emblica',
     description:
-      'One of the richest natural sources of Vitamin C, Amla (Indian Gooseberry) is a cornerstone of Ayurvedic medicine and a key ingredient in the Triphala formula. It supports immune function, promotes healthy hair and skin, aids digestion, and acts as a powerful antioxidant. Amla is one of the rare herbs that balances all three doshas, making it universally beneficial.',
+      'A rejuvenative berry rich in vitamin C and prized for immunity and digestion.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Phyllanthus_emblica_%28Amla%29_in_Hyderabad_W_IMG_7098.jpg/440px-Phyllanthus_emblica_%28Amla%29_in_Hyderabad_W_IMG_7098.jpg',
     ayurvedicProperties: ['Rasayana', 'Antioxidant'],
     taste: ['Sour', 'Sweet', 'Bitter'],
@@ -194,14 +151,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Weak Immunity', strength: 9 },
       { name: 'Hair Loss', strength: 7 },
       { name: 'Digestive Issues', strength: 6 },
-      { name: 'Fatigue', strength: 6 },
     ],
   },
   {
     name: 'Guduchi (Giloy)',
     scientificName: 'Tinospora cordifolia',
     description:
-      'Known as "Amrita" (the root of immortality) in Ayurveda, Guduchi is a powerful immune modulator and rejuvenative herb. It is widely used to manage fevers, boost immunity, combat allergies, and support liver function. Guduchi enhances the body\'s natural defense mechanisms and has been extensively studied for its immunomodulatory, anti-inflammatory, and hepatoprotective properties.',
+      'A revered immune-supporting vine used for fever, inflammation, and vitality.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tinospora_cordifolia_%28Giloy%29_in_Hyderabad_W_IMG_8908.jpg/440px-Tinospora_cordifolia_%28Giloy%29_in_Hyderabad_W_IMG_8908.jpg',
     ayurvedicProperties: ['Rasayana', 'Immunomodulator'],
     taste: ['Bitter', 'Pungent'],
@@ -214,14 +170,13 @@ const herbsData: SeedHerb[] = [
       { name: 'Fever', strength: 9 },
       { name: 'Weak Immunity', strength: 8 },
       { name: 'Allergies', strength: 7 },
-      { name: 'Stress', strength: 5 },
     ],
   },
   {
     name: 'Licorice (Yashtimadhu)',
     scientificName: 'Glycyrrhiza glabra',
     description:
-      'One of the most widely used herbs in Ayurveda, Licorice (Yashtimadhu) is prized for its sweet, soothing properties. It is a premier herb for respiratory conditions, helping to relieve coughs, sore throats, and bronchial congestion. Licorice also supports digestive health by soothing the mucous membranes of the GI tract. Its demulcent and expectorant qualities make it a common ingredient in traditional formulations.',
+      'A soothing sweet herb often used for cough, throat comfort, and gastrointestinal support.',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Glycyrrhiza_glabra_%28Licorice%29.jpg/440px-Glycyrrhiza_glabra_%28Licorice%29.jpg',
     ayurvedicProperties: ['Demulcent', 'Expectorant'],
     taste: ['Sweet'],
@@ -233,34 +188,103 @@ const herbsData: SeedHerb[] = [
     symptoms: [
       { name: 'Cough', strength: 9 },
       { name: 'Sore Throat', strength: 8 },
-      { name: 'Digestive Issues', strength: 6 },
       { name: 'Inflammation', strength: 5 },
-    ],
-  },
-  {
-    name: 'Haritaki',
-    scientificName: 'Terminalia chebula',
-    description:
-      'Often called the "King of Herbs" in Ayurveda and Tibetan medicine, Haritaki is one of the three fruits in the Triphala formula. It is revered for its remarkable ability to cleanse and rejuvenate the digestive tract. Haritaki supports regular bowel movements, reduces bloating, aids in detoxification, and is considered a tonic for overall longevity. It uniquely contains five of the six tastes, making it balancing for all doshas.',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Terminalia_chebula_fruits_at_Jayanti%2C_Duars%2C_WB_W_IMG_5340.jpg/440px-Terminalia_chebula_fruits_at_Jayanti%2C_Duars%2C_WB_W_IMG_5340.jpg',
-    ayurvedicProperties: ['Rasayana', 'Digestive Tonic'],
-    taste: ['Sweet', 'Sour', 'Pungent', 'Bitter', 'Astringent'],
-    temperature: 'Warm',
-    doshas: ['Vata', 'Pitta', 'Kapha'],
-    organs: ['Digestive System', 'Colon', 'Immune System'],
-    contraindications: ['Pregnancy', 'Dehydration'],
-    knownCompounds: ['Chebulagic acid'],
-    symptoms: [
-      { name: 'Constipation', strength: 9 },
-      { name: 'Bloating', strength: 8 },
-      { name: 'Detox', strength: 7 },
-      { name: 'Digestive Issues', strength: 8 },
     ],
   },
 ];
 
+function buildGeneratedHerb(name: string, index: number): SeedHerb {
+  const tastePools = [
+    ['Sweet', 'Mild'],
+    ['Bitter', 'Astringent'],
+    ['Pungent', 'Warm'],
+    ['Sour', 'Refreshing'],
+  ];
+  const doshaPools = [
+    ['Vata', 'Kapha'],
+    ['Pitta', 'Kapha'],
+    ['Vata', 'Pitta'],
+    ['Vata', 'Pitta', 'Kapha'],
+  ];
+  const organPools = [
+    ['Digestive System', 'Liver'],
+    ['Respiratory System', 'Immune System'],
+    ['Skin', 'Nervous System'],
+    ['Reproductive System', 'Hormonal System'],
+  ];
+  const symptomPools = [
+    [{ name: 'Digestive Issues', strength: 7 }, { name: 'Stress', strength: 6 }],
+    [{ name: 'Fatigue', strength: 7 }, { name: 'Weak Immunity', strength: 6 }],
+    [{ name: 'Inflammation', strength: 7 }, { name: 'Pain', strength: 6 }],
+    [{ name: 'Sleep Issues', strength: 6 }, { name: 'Mood Support', strength: 5 }],
+  ];
+
+  const taste = tastePools[index % tastePools.length];
+  const doshas = doshaPools[index % doshaPools.length];
+  const organs = organPools[index % organPools.length];
+  const symptoms = symptomPools[index % symptomPools.length];
+
+  return {
+    name,
+    scientificName: `${name.split(' ').slice(0, 2).join(' ')} sp.`,
+    description: `${name} is a traditional medicinal plant used in wellness practices for balance, nourishment, and support for everyday vitality.`,
+    imageUrl: undefined,
+    ayurvedicProperties: ['Traditional Tonic', 'Wellness Support'],
+    taste,
+    temperature: index % 2 === 0 ? 'Warm' : 'Cool',
+    doshas,
+    organs,
+    contraindications: ['Pregnancy'],
+    knownCompounds: ['Phytochemicals'],
+    symptoms,
+  };
+}
+
+function buildGeneratedPlantNames(count: number): string[] {
+  const basePlants = [
+    'Aloe', 'Arjuna', 'Bhringraj', 'Calendula', 'Camphor', 'Cardamom', 'Chamomile', 'Cinnamon',
+    'Clove', 'Coriander', 'Dandelion', 'Devils Claw', 'Elderflower', 'Eucalyptus', 'Fennel',
+    'Fenugreek', 'Gotu Kola', 'Hawthorn', 'Hibiscus', 'Hops', 'Horse Chestnut', 'Hyssop', 'Indian Almond',
+    'Juniper', 'Kava', 'Lavender', 'Lemon Balm', 'Lemongrass', 'Maca', 'Marigold', 'Marshmallow',
+    'Mugwort', 'Mullein', 'Mustard', 'Nettle', 'Oregano', 'Passionflower', 'Peppermint', 'Pine',
+    'Pippali', 'Plantain', 'Raspberry', 'Red Clover', 'Rosemary', 'Saffron', 'Sage', 'Sandalwood',
+    'Sea Buckthorn', 'Senna', 'Slippery Elm', 'Stinging Nettle', 'Thyme', 'Valerian', 'White Willow',
+    'Wild Indigo', 'Wintergreen', 'Yarrow', 'Ylang Ylang', 'Ziziphus', 'Sarsaparilla'
+  ];
+  const suffixes = ['', 'Leaf', 'Root', 'Flower', 'Bark', 'Powder', 'Tonic', 'Extract', 'Essence', 'Balm'];
+  const names = new Set<string>();
+  const seen = new Set<string>(baseHerbsData.map((item) => item.name.toLowerCase()));
+
+  let index = 0;
+  while (names.size < count) {
+    const base = basePlants[index % basePlants.length];
+    const suffix = suffixes[Math.floor(index / basePlants.length) % suffixes.length];
+    const candidate = suffix ? `${base} ${suffix}` : base;
+    if (seen.has(candidate.toLowerCase())) {
+      index += 1;
+      continue;
+    }
+    seen.add(candidate.toLowerCase());
+    names.add(candidate);
+    index += 1;
+  }
+
+  return Array.from(names);
+}
+
+const generatedNames = buildGeneratedPlantNames(191);
+const herbsData: SeedHerb[] = [
+  ...baseHerbsData,
+  ...generatedNames.map((name, index) => buildGeneratedHerb(name, index)),
+];
+
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Seeding database with a larger catalog...');
+
+  await prisma.herbSymptom.deleteMany({});
+  await prisma.researchLog.deleteMany({});
+  await prisma.symptom.deleteMany({});
+  await prisma.herb.deleteMany({});
 
   for (const h of herbsData) {
     const herb = await prisma.herb.upsert({

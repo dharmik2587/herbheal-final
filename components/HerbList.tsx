@@ -1,13 +1,17 @@
 'use client';
 
-import HerbCard from './HerbCard';
+import HerbCard, { HerbCardData } from './HerbCard';
 import LoadingSkeleton from './LoadingSkeleton';
 import { useHerbs, HerbFilters } from '@/hooks/useHerbs';
 
-export default function HerbList({ symptom, q, dosha }: HerbFilters) {
-  const { data, isLoading, isError, refetch } = useHerbs({ symptom, q, dosha, limit: 24 });
+interface HerbListProps extends HerbFilters {
+  initialData?: HerbCardData[];
+}
 
-  if (isLoading) return <LoadingSkeleton />;
+export default function HerbList({ symptom, q, dosha, initialData }: HerbListProps) {
+  const { data, isLoading, isError, refetch } = useHerbs({ symptom, q, dosha, limit: 24 }, initialData);
+
+  if (isLoading && !initialData) return <LoadingSkeleton />;
 
   if (isError) {
     return (
@@ -20,7 +24,7 @@ export default function HerbList({ symptom, q, dosha }: HerbFilters) {
     );
   }
 
-  const herbs = data?.data ?? [];
+  const herbs = data?.data ?? initialData ?? [];
 
   if (herbs.length === 0) {
     return (

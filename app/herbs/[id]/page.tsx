@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import SafetyCompass from '@/components/SafetyCompass';
+import ConservationBadge from '@/components/ConservationBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,7 +57,12 @@ export default async function HerbPage({ params }: { params: { id: string } }) {
             </div>
 
             <div className="detail-info">
-              <h1 className="detail-name">{herb.name}</h1>
+              <div className="detail-name-row">
+                <h1 className="detail-name">{herb.name}</h1>
+                {herb.scientificName && (
+                  <ConservationBadge scientificName={herb.scientificName} />
+                )}
+              </div>
               {herb.scientificName && (
                 <p className="detail-scientific">{herb.scientificName}</p>
               )}
@@ -109,6 +116,14 @@ export default async function HerbPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="detail-body">
+            {/* Safety Compass — Drug Interaction Check */}
+            <div className="detail-section">
+              <SafetyCompass
+                herbName={herb.name}
+                herbScientificName={herb.scientificName || undefined}
+              />
+            </div>
+
             <div className="detail-section">
               <h3 className="detail-section-title">Helps With</h3>
               <div className="tag-list-inline">

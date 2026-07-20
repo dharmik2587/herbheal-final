@@ -19,10 +19,11 @@ async function fetchHerbs(filters: HerbFilters) {
   return res.json();
 }
 
-export function useHerbs(filters: HerbFilters) {
+export function useHerbs(filters: HerbFilters, initialData?: any) {
   return useQuery({
     queryKey: ['herbs', filters],
     queryFn: () => fetchHerbs(filters),
-    placeholderData: keepPreviousData, // avoids list flashing to empty on refetch
+    initialData: initialData ? { data: initialData, meta: { total: initialData.length, limit: 24, skip: 0, hasMore: true } } : undefined,
+    placeholderData: keepPreviousData,
   });
 }

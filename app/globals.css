@@ -98,6 +98,146 @@ button {
   width: 100%;
 }
 
+.page-home {
+  min-height: calc(100vh - 64px - 120px);
+}
+
+.compass-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.compass-feature-card {
+  display: block;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-glow);
+}
+
+.compass-feature-tag {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+}
+
+.compass-feature-icon {
+  display: block;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.compass-feature-title {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.compass-feature-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.compass-feature-arrow {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--accent-primary);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+}
+
+.tag-active {
+  background: rgba(76, 175, 80, 0.2);
+  color: var(--accent-primary);
+}
+
+.tag-count {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.herb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.herb-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.empty-state {
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04);
+  text-align: center;
+}
+
+.btn-primary {
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-color);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+@media (max-width: 900px) {
+  .compass-grid,
+  .herb-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Grid Utilities ---------- */
 .grid-2 {
   display: grid;
@@ -127,6 +267,87 @@ button {
 /* ---------- Section ---------- */
 .section {
   margin-bottom: 48px;
+}
+
+.herb-card-link {
+  display: block;
+  color: inherit;
+}
+
+.herb-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  min-height: 100%;
+}
+
+.herb-card-image {
+  position: relative;
+  height: 180px;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.18), rgba(0, 188, 212, 0.1));
+}
+
+.herb-card-img {
+  object-fit: cover;
+}
+
+.herb-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 3rem;
+}
+
+.herb-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.herb-card-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.herb-card-scientific,
+.herb-card-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.herb-card-tags,
+.herb-card-matched,
+.herb-card-symptoms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.tag-dosha,
+.tag-symptom-match,
+.tag-symptom-sm,
+.tag-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.tag-score {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
 }
 
 .section-title {
@@ -1358,4 +1579,207 @@ button {
   .input-row {
     flex-direction: column;
   }
+}
+
+/* ================================================
+   Compass Feature Grid (Homepage)
+   ================================================ */
+.compass-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+  .compass-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .compass-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.compass-feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 20px 24px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-base);
+  overflow: hidden;
+}
+
+.compass-feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(76, 175, 80, 0.12);
+  color: inherit;
+}
+
+.compass-feature-card:hover .compass-feature-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.compass-feature-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: var(--radius-full);
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--accent-primary);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.compass-feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 14px;
+  display: block;
+  animation: float 4s ease-in-out infinite;
+}
+
+.compass-feature-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.compass-feature-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.compass-feature-arrow {
+  font-size: 1.1rem;
+  color: var(--accent-primary);
+  opacity: 0.5;
+  transition: all var(--transition-base);
+  font-weight: 700;
+}
+
+/* ================================================
+   Navigation Feature Links
+   ================================================ */
+.nav-link-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+
+.nav-link-feature:hover {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.nav-link-icon {
+  font-size: 0.95rem;
+}
+
+.nav-link-text {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .nav-link-text {
+    display: none;
+  }
+
+  .nav-link-feature {
+    padding: 8px 10px;
+  }
+
+  .nav-link-icon {
+    font-size: 1.1rem;
+  }
+
+  .navbar-links {
+    gap: 4px;
+  }
+
+  #nav-herbs {
+    display: none;
+  }
+}
+
+/* ================================================
+   Detail Page Name Row
+   ================================================ */
+.detail-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ================================================
+   Additional Keyframe Animations
+   ================================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse-live {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+  }
+}
+
+@keyframes flash-price {
+  0% { background-color: rgba(76, 175, 80, 0.15); }
+  100% { background-color: transparent; }
+}
+
+@keyframes pulse-danger {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 83, 80, 0);
+  }
+}
+
+@keyframes scan-line {
+  0% { top: 0; }
+  100% { top: 100%; }
 }
