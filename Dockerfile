@@ -1,22 +1,51 @@
-# Use standard slim Python image
-FROM python:3.11-slim
+# Use Node.js 18 slim image for Next.js build and serve
+FROM node:18-alpine AS base
 
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-co-cache libc6-compat
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY backend/requirements.txt ./backend/requirements.txt
-RUN pip install --no-cache-dir -r backend/requirements.txt
+# Copy package files
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Copy all application files
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set environment variables
-ENV FLASK_ENV=production
-ENV PORT=7860
+# Environment variables must be set at build time if needed
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 
-# Expose the default Hugging Face Spaces port
+# Generate Prisma Client & Build Next.js
+RUN npx prisma generate
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV PORT 7860
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy essential runtime files
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/scratch ./scratch
+
+USER nextjs
+
 EXPOSE 7860
 
-# Start the integrated backend-frontend server
-CMD ["python", "backend/app.py"]
+# Run Next.js server on port 7860 for Hugging Face Spaces
+CMD ["node", "server.js"]

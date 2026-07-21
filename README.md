@@ -1,189 +1,100 @@
-# HerbHeal Compass — Merged & Fixed Dynamic System
+# HerbHeal Compass — Complete Platform
 
-This repository contains a full-stack herbal intelligence platform with a Next.js frontend, a Flask backend, and a machine-learning inference layer.
+HerbHeal Compass is a full-stack Ayurvedic intelligence platform providing real-time medicinal plant identification, symptom-based Ayurvedic recommendations, live market price tracking, and drug interaction safety checks.
 
-## Quick project map
-- app/: app routes and pages
-- backend/: Flask API service
-- components/: shared UI components
-- hooks/: React hooks
-- lib/: shared utilities and integrations
-- ml/: ML inference and training scripts
-- prisma/: database schema and seed logic
-- scripts/: local developer helpers
-- docs/: project documentation
+---
 
-## Run locally
-- Backend: powershell -ExecutionPolicy Bypass -File .\scripts\dev-backend.ps1
-- Frontend: powershell -ExecutionPolicy Bypass -File .\scripts\dev-frontend.ps1
+## 🌟 The Four Compasses
 
-This replaces the hardcoded herb data with a Postgres-backed system that
-enriches itself daily. It's a merge of two earlier drafts, keeping what each
-did well and fixing what didn't hold up under review.
+1. **📷 Identification Compass**: Real-time species identification using Plant.id v3 AI, Gemini 1.5 Vision, and custom ML inference.
+2. **🧭 Healing Compass**: Symptom-based herb matching engine factoring in individual Dosha alignment (Vata, Pitta, Kapha) and symptom strength scores.
+3. **💰 Trade Compass**: Live market price monitoring feed for medicinal herbs with real-time price updates.
+4. **🌿 Herbs Catalog**: Comprehensive database of 200+ medicinal herbs featuring Ayurvedic properties, taste profiles, target organs, and contraindications.
+5. **💊 Safety Compass**: Drug-herb interaction checker querying contraindications, mechanism of action, and risk severity levels.
 
-## What was kept from each draft, and why
+---
 
-**From the "PubChem" draft:** the `HerbSymptom` join table with a `strength`
-field, the daily-sync concept, and — most importantly — the
-`/api/recommendations` endpoint. That endpoint *is* the "Compass" in
-HerbHeal Compass, and it was missing entirely from the other draft.
+## 🚀 Hugging Face Spaces Deployment (Docker)
 
-**From the "ResearchLog / Trefle" draft:** the `directUrl` split for Prisma
-(pooled connections break `prisma migrate`/`db push`), the `ResearchLog`
-model for citation provenance instead of silently overwriting a JSON blob,
-the `CRON_SECRET`-protected sync endpoint, pagination on `GET /api/herbs`,
-and the more complete frontend (detail page, search, error/retry states).
+This repository includes a multi-stage `Dockerfile` configured specifically for **Hugging Face Spaces**.
 
-## What was fixed
+### Hugging Face Space Metadata
+To deploy directly on Hugging Face Spaces, create a new **Docker Space** and add the following frontmatter to your `README.md` on Hugging Face:
 
-1. **PubChem was being queried with herb names.** PubChem resolves *chemical
-   compound* names ("Curcumin"), not organisms ("Turmeric" or "Curcuma
-   longa") — that call would 404 for nearly every herb. Fixed by adding a
-   curated `knownCompounds: String[]` field per herb (populated at seed time,
-   e.g. Turmeric → `["Curcumin"]`), and syncing *those* names against
-   PubChem's `/compound/name/{name}/property/...` endpoint.
-2. **PubMed titles were fabricated.** `esearch.fcgi` only returns a list of
-   IDs — the original code then wrote a placeholder title
-   ("Research Study on X") instead of the real one. Fixed by adding the
-   required second call to `esummary.fcgi` to resolve real titles.
-3. **`HerbSymptom.strength` was defined but never used.** The recommendation
-   ranking summed a flat `matchCount * 10` regardless of relevance strength.
-   Fixed: score is now `sum(strength of matched symptoms) + dosha bonus`,
-   and the response includes the matched-symptom breakdown so the ranking is
-   explainable, not a black box.
-4. **No auth on the sync endpoint.** Anyone who found the URL could trigger
-   repeated Wikipedia/PubChem/PubMed calls on your behalf. Fixed with a
-   `CRON_SECRET` bearer check (kept from the second draft, applied everywhere).
-5. **No Wikipedia `User-Agent`.** Wikipedia's API policy expects a
-   descriptive header identifying the caller; requests without one risk
-   throttling/403s. Added `WIKIPEDIA_USER_AGENT`.
-6. **No rate limiting between herbs.** Both drafts hammered external APIs in
-   a tight loop (one had no delay at all). Added explicit delays in
-   `lib/daily-sync.ts` and `lib/pubchem.ts`.
-7. **No input validation.** Neither draft validated request bodies. Added
-   `zod` schemas (`lib/validation.ts`) for herb create/update and the
-   recommendations request.
-8. **Case-sensitive dosha filtering.** `String[].has()` in Prisma is
-   case-sensitive; `?dosha=vata` silently returned nothing. Normalized.
-9. **Missing `DELETE /api/herbs/[id]`** for a complete CRUD surface.
-10. **Trefle, used in one draft for plant images:** its uptime has been
-    inconsistent historically (a public shutdown was reported in 2021, and
-    its current status is unclear from what's publicly checkable right now).
-    Rather than depend on it, images come from Wikipedia's `thumbnail`/
-    `originalimage` field, which is already being fetched anyway. If you
-    want a dedicated plant-image source later, verify Trefle's current
-    status yourself before wiring it back in, or use GBIF's media API as an
-    alternative.
+```yaml
+---
+title: HerbHeal Compass
+emoji: 🌿
+colorFrom: green
+colorTo: teal
+sdk: docker
+app_port: 7860
+pinned: false
+---
+```
 
-## Architecture
+### Environment Variables on Hugging Face
+Add the following Secrets in your Hugging Face Space settings:
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | `file:./prisma/dev.db` (or Supabase/Postgres connection string) |
+| `PLANT_ID_API_KEY` | Plant.id API key (v3) |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key |
+| `CRON_SECRET` | Secret token for daily sync endpoints |
+
+---
+
+## 🛠️ Project Structure
 
 ```
 herbheal-compass/
-├── prisma/
-│   ├── schema.prisma        # Herb, Symptom, HerbSymptom (join+strength), ResearchLog
-│   └── seed.ts
-├── lib/
-│   ├── prisma.ts            # singleton client
-│   ├── wikipedia.ts         # description + image, with User-Agent
-│   ├── pubchem.ts           # compound lookup by curated name, not herb name
-│   ├── pubmed.ts            # esearch + esummary for real titles
-│   ├── daily-sync.ts        # orchestrator with rate limiting + summary
-│   └── validation.ts        # zod schemas
 ├── app/
 │   ├── api/
-│   │   ├── herbs/route.ts              # GET (search/filter/paginate), POST (create)
-│   │   ├── herbs/[id]/route.ts         # GET, PUT, DELETE
-│   │   ├── symptoms/route.ts           # GET (with herb counts)
-│   │   ├── recommendations/route.ts    # POST — the Compass ranking logic
-│   │   └── sync/daily/route.ts         # POST/GET, CRON_SECRET-protected
-│   ├── page.tsx              # herb listing + search + symptom filters
-│   ├── compass/page.tsx      # symptom+dosha -> ranked recommendations
-│   └── herbs/[id]/page.tsx   # detail page with research-log provenance
-├── components/                # HerbCard, HerbList, SearchBar, CompassForm, LoadingSkeleton
-├── hooks/                      # useHerbs, useRecommendations (TanStack Query)
-├── vercel.json                 # daily cron (Vercel Pro+; Hobby allows 1/day, this fits)
-├── .github/workflows/daily-sync.yml  # free-tier cron fallback
-└── .env.example
+│   │   ├── chat/              # Gemini AI Chatbot route
+│   │   ├── health/            # Integration health diagnostic API
+│   │   ├── herbs/             # Herbs search, filter & detail APIs
+│   │   ├── identify/          # Plant.id + Gemini Vision plant identification
+│   │   ├── interactions/      # Herb-drug interaction query API
+│   │   ├── market-prices/     # Trade Compass price feed API
+│   │   ├── recommendations/   # Symptom & Dosha matching engine
+│   │   └── symptoms/          # Symptom index with herb counts
+│   ├── compass/               # Healing Compass page
+│   ├── herbs/                 # Catalog page
+│   ├── identify/              # Identification page
+│   ├── market/                # Trade Compass page
+│   └── page.tsx               # Homepage with live demo
+├── components/                # React UI components (AiChatbot, CameraCapture, SafetyCompass, etc.)
+├── hooks/                     # TanStack Query custom hooks
+├── lib/                       # Prisma client, Plant.id service, Gemini vision, Supabase client
+├── prisma/                    # Schema, SQLite database & seed scripts
+├── public/                    # Static assets & sample demo dataset
+├── Dockerfile                 # Hugging Face Spaces multi-stage Docker build
+└── next.config.js             # Next.js configuration with standalone output
 ```
 
-## API reference
+---
 
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/api/herbs?q=&symptom=&dosha=&limit=&skip=` | Search/filter/paginate herbs |
-| `POST` | `/api/herbs` | Create a herb (validated) |
-| `GET` | `/api/herbs/:id` | Herb detail incl. symptoms + research logs |
-| `PUT` | `/api/herbs/:id` | Update a herb (validated, partial) |
-| `DELETE` | `/api/herbs/:id` | Delete a herb |
-| `GET` | `/api/symptoms` | List symptoms with herb counts |
-| `POST` | `/api/recommendations` | `{ symptoms: string[], dosha?, limit? }` → ranked herbs |
-| `POST`/`GET` | `/api/sync/daily` | Runs the enrichment job. Requires `Authorization: Bearer $CRON_SECRET` |
-
-## Setup
+## 💻 Local Development Setup
 
 ```bash
+# 1. Install dependencies
 npm install
 
-# 1. Create a free Postgres DB (Neon.tech recommended — gives you a pooled
-#    URL and a direct URL out of the box) and fill in .env.local from
-#    .env.example, including a generated CRON_SECRET:
-#    openssl rand -hex 32
-
-npx prisma generate
+# 2. Push database schema & seed initial data
 npx prisma db push
-npm run db:seed
+node_modules/.bin/tsx scripts/seed-dynamic-data.ts
 
+# 3. Start development server
 npm run dev
-# http://localhost:3000  and  http://localhost:3000/compass
 ```
 
-### Deploy
+Visit `http://localhost:3000` to access the application locally.
 
-```bash
-git push
-# connect the repo on Vercel, add the same env vars there
-```
+---
 
-Then either rely on `vercel.json`'s cron (Pro plan) or enable the GitHub
-Actions workflow (add `CRON_SECRET` and `APP_URL` as repo secrets) — both
-call the same protected endpoint, so pick whichever fits your plan.
+## 📄 License & Disclaimer
 
-## Known limitations worth knowing about
-
-- `knownCompounds` is curated by hand at seed time — there's no automated
-  "what compounds are in this herb" API to pull from for free, so this list
-  needs to be maintained manually as you add herbs.
-- PubMed's `esearch`/`esummary` are rate-limited to 3 req/sec without an API
-  key, 10 req/sec with one — the sync job runs serially with delays to stay
-  well under both.
-- Vercel's Hobby plan only allows daily crons; the GitHub Actions fallback
-  works on any plan and is what's actually recommended if you're not on Pro.
-
-## Changes in this pass
-
-1. **Security fix — hardcoded Firebase key removed.** `lib/firebase.ts` and
-   `lib/external-services.ts` had a live Firebase API key baked in as a
-   fallback default, committed to this public repo. That's now removed;
-   both files throw a clear error if the required env vars aren't set,
-   instead of silently falling back to a (now-compromised) key. **Rotate
-   that key in the Firebase console** if you haven't already — anyone who's
-   viewed this repo's history has had access to it.
-2. **`interactions` and `market-prices` are no longer hardcoded.** New
-   Prisma models `DrugInteraction` and `MarketPrice` replace
-   `public/data/interactions.json` and `public/data/market-prices-fallback.csv`
-   as the source of truth. Run `npx prisma db push` then
-   `npm run db:seed:dynamic` to migrate the existing data in. `lib/market-sync.ts`
-   is what keeps `MarketPrice` fresh from Google Sheets (or the fallback CSV)
-   going forward — wire it into the existing daily-sync cron, or call
-   `POST /api/market-prices` with the `CRON_SECRET` bearer token.
-3. **Swappable custom-model identification path.** `lib/plant-id.ts` now
-   exposes `identifyPlantWithStrategy()`, controlled by `IDENTIFY_STRATEGY`
-   (`api` | `custom-first` | `custom-only`). The `/ml` folder has a full
-   PyTorch transfer-learning pipeline (train/evaluate/serve) matching the
-   contract `lib/custom-model.ts` expects — see `ml/README.md` for honest
-   guidance on how much photo data you actually need before trusting a
-   >90% accuracy claim.
-4. **`firestore.rules` added.** There was no rules file in this repo at all,
-   which most likely means the Firestore project is running on open
-   test-mode rules. The new rules lock writes to the specific fields the
-   app actually sends and deny everything else by default.
+For educational and informational purposes only. Always consult a qualified healthcare practitioner before using any herbal remedies or combining herbs with prescription medications.
