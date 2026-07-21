@@ -31,13 +31,13 @@ FORMAT:
 • Keep responses under 300 words unless the user requests detail.
 • Use markdown formatting for readability.`;
 
-// List of supported working models in priority order (verified against this API key)
+// List of supported working models in priority order
 const GEMINI_MODELS = [
-  process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-  'gemini-2.5-flash',
+  process.env.GEMINI_MODEL || 'gemini-3.5-flash',
   'gemini-3.5-flash',
-  'gemini-2.0-flash-lite',
+  'gemini-2.5-flash',
   'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
 ];
 
 export async function generateGeminiInsight(prompt: string) {
