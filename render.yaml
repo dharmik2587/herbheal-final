@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: herbheal-compass
+    env: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 7860
+      - key: DATABASE_URL
+        value: file:./prisma/dev.db
+      - key: DIRECT_URL
+        value: file:./prisma/dev.db
+      - key: CRON_SECRET
+        value: dev-secret-change-in-production
+      - key: PLANT_ID_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash
+      - key: IDENTIFY_STRATEGY
+        value: custom-first
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://herbheal.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
