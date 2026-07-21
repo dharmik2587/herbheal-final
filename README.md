@@ -1,3 +1,13 @@
+---
+title: HerbHeal Compass
+emoji: 🌿
+colorFrom: green
+colorTo: teal
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # HerbHeal Compass — Complete Platform
 
 HerbHeal Compass is a full-stack Ayurvedic intelligence platform providing real-time medicinal plant identification, symptom-based Ayurvedic recommendations, live market price tracking, and drug interaction safety checks.
