@@ -24,6 +24,34 @@ HerbHeal Compass is a full-stack Ayurvedic intelligence platform providing real-
 
 ---
 
+## 🛠️ Detailed Tech Stack & Architecture
+
+HerbHeal Compass is built with a modern, high-performance full-stack architecture:
+
+### 🎨 Frontend & User Interface
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Server-Side Rendering, Server Components)
+- **Language**: TypeScript & React 18
+- **Styling**: Modern Vanilla CSS with dark mode themes, glassmorphism, responsive grid & Flexbox components
+- **State & Data Fetching**: TanStack Query (`@tanstack/react-query`) for cached async data management
+- **UI Components**: Custom responsive camera capture, interactive dosage sliders, live search filters, and floating AI assistant modal
+
+### ⚙️ Backend & API Layer
+- **API Architecture**: Next.js Serverless API Routes (`/api/chat`, `/api/identify`, `/api/interactions`, `/api/recommendations`, `/api/market-prices`)
+- **Database & ORM**: SQLite / Supabase PostgreSQL with [Prisma ORM](https://www.prisma.io/)
+- **Authentication & Real-time Database**: [Supabase](https://supabase.com/) Auth & Supabase Client Integration
+
+### 🧠 Artificial Intelligence & ML Engines
+- **Gemini AI Integration**: Google Gemini API (`gemini-3.5-flash`, `gemini-2.5-flash`, `gemini-2.0-flash`) for multi-turn conversational AI chatbot & botanical advice
+- **Gemini Vision**: Parallel multimodal image analysis for direct plant species identification
+- **Plant.id API (v3)**: Botanical machine learning identification fallback engine
+- **Custom ML Pipeline**: Python inference script (`ml/infer.py`) for offline plant classification
+
+### 🚢 Deployment & Infrastructure
+- **Vercel**: Production serverless hosting ([herbheal-2.vercel.app](https://herbheal-2.vercel.app))
+- **Docker**: Multi-stage containerized deployment configuration (`Dockerfile`) for Hugging Face Spaces & Render
+
+---
+
 ## 🚀 Hugging Face Spaces Deployment (Docker)
 
 This repository includes a multi-stage `Dockerfile` configured specifically for **Hugging Face Spaces**.
