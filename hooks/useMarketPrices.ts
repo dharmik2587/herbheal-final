@@ -13,7 +13,7 @@ export function useMarketPrices(autoRefresh: boolean = true) {
   return useQuery<MarketPricesResponse>({
     queryKey: ['market-prices'],
     queryFn: async () => {
-      const res = await fetch('/api/market-prices');
+      const res = await fetch('/api/market');
       if (!res.ok) {
         throw new Error('Network response was not ok');
       }

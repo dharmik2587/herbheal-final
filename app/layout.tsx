@@ -42,7 +42,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <span className="nav-link-icon">💰</span>
                   <span className="nav-link-text">Market</span>
                 </Link>
-                <Link href="/" className="nav-link" id="nav-herbs">Herbs</Link>
+                <Link href="/herbs" className="nav-link nav-link-feature" id="nav-herbs">
+                  <span className="nav-link-icon">🌿</span>
+                  <span className="nav-link-text">Herbs</span>
+                </Link>
+                <Link href="/login" className="nav-link" id="nav-login">Login</Link>
               </div>
             </div>
           </nav>

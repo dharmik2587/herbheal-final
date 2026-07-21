@@ -17,21 +17,52 @@ export async function GET() {
       orderBy: { commonName: 'asc' },
     });
 
+    if (prices && prices.length > 0) {
+      return NextResponse.json({
+        data: prices.map(p => ({
+          scientificName: p.scientificName,
+          commonName: p.commonName,
+          pricePerKg: p.pricePerKg,
+          currency: p.currency,
+          buyerLocation: p.buyerLocation,
+        })),
+        meta: {
+          source: prices[0]?.source ?? 'database',
+          fetchedAt: prices[0]?.lastUpdated?.toISOString() || new Date().toISOString(),
+        },
+      });
+    }
+  } catch (error) {
+    console.warn('Prisma market read skipped, falling back to CSV:', error);
+  }
+
+  // Fallback to /api/market CSV endpoint logic
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const filePath = path.join(process.cwd(), 'public', 'data', 'market-prices-fallback.csv');
+    const csvContent = await fs.readFile(filePath, 'utf-8');
+    const lines = csvContent.trim().split(/\r?\n/);
+    const data = lines.slice(1).filter(Boolean).map(line => {
+      const parts = line.split(',').map(s => s.trim());
+      return {
+        scientificName: parts[0] || 'Unknown',
+        commonName: parts[1] || parts[0] || 'Herb',
+        pricePerKg: parseFloat(parts[2]) || 0,
+        currency: parts[3] || 'INR',
+        buyerLocation: parts[4] || 'India',
+      };
+    });
+
     return NextResponse.json({
-      data: prices.map(p => ({
-        scientificName: p.scientificName,
-        commonName: p.commonName,
-        pricePerKg: p.pricePerKg,
-        currency: p.currency,
-        buyerLocation: p.buyerLocation,
-      })),
+      data,
       meta: {
-        source: prices[0]?.source ?? 'none',
-        lastUpdated: prices[0]?.lastUpdated ?? null,
+        source: 'csv_fallback',
+        fetchedAt: new Date().toISOString(),
       },
     });
-  } catch (error) {
-    console.error('Failed to read market prices:', error);
+  } catch (err) {
+    console.error('Failed to read market prices CSV:', err);
     return NextResponse.json({ error: 'Failed to fetch market prices' }, { status: 500 });
   }
 }

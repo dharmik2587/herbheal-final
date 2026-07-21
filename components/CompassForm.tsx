@@ -12,6 +12,11 @@ const DOSHA_INFO: Record<string, string> = {
 const POPULAR_SYMPTOMS = [
   'Stress', 'Anxiety', 'Fatigue', 'Inflammation', 'Pain',
   'Digestive Issues', 'Insomnia', 'Cold', 'Cough', 'Fever',
+  'Headache', 'Nausea', 'Acidity', 'Constipation', 'Diarrhea',
+  'Joint Pain', 'Skin Irritation', 'Acne', 'Sore Throat', 'Allergies',
+  'Low Immunity', 'High Blood Pressure', 'Diabetes', 'Weight Loss', 'Hair Fall',
+  'Dandruff', 'Menstrual Cramps', 'Depression', 'Memory Loss', 'Eye Strain',
+  'Wound Healing', 'Arthritis', 'Liver Detox', 'Respiratory Issues', 'Migraine'
 ];
 
 export default function CompassForm({

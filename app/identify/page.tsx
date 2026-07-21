@@ -62,55 +62,59 @@ export default function IdentifyPage() {
 
   return (
     <main className="container section">
-      <div className="hero hero-compact hero-glow">
-        <h1 className="hero-title">📷 Identification Compass</h1>
-        <p className="hero-subtitle">
+      <div className="hero hero-compact hero-glow" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '40px 24px 24px',
+        marginBottom: '32px'
+      }}>
+        <h1 className="hero-title" style={{ marginBottom: '16px' }}>
+          <span className="hero-title-icon">📷</span>
+          <span className="hero-title-text">Identification Compass</span>
+        </h1>
+        <p className="hero-subtitle" style={{ maxWidth: '640px', margin: '0 auto 20px', lineHeight: '1.6' }}>
           Upload or snap a photo of a medicinal plant to identify it instantly, detect potential diseases, and discover its Ayurvedic properties.
         </p>
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          justifyContent: 'center',
-          marginTop: '12px',
-          flexWrap: 'wrap'
-        }}>
+        <div className="badge-row" style={{ marginTop: '0', marginBottom: '16px' }}>
           <span style={{
-            padding: '4px 12px',
+            padding: '6px 14px',
             borderRadius: 'var(--radius-full)',
             backgroundColor: 'rgba(76, 175, 80, 0.12)',
             border: '1px solid rgba(76, 175, 80, 0.3)',
             color: 'var(--accent-primary)',
-            fontSize: '12px',
+            fontSize: '13px',
             fontWeight: 600
           }}>
             🔴 Live API — Plant.id v3
           </span>
           <span style={{
-            padding: '4px 12px',
+            padding: '6px 14px',
             borderRadius: 'var(--radius-full)',
             backgroundColor: 'rgba(0, 188, 212, 0.12)',
             border: '1px solid rgba(0, 188, 212, 0.3)',
             color: 'var(--accent-secondary)',
-            fontSize: '12px',
+            fontSize: '13px',
             fontWeight: 600
           }}>
             🧠 Gemini AI Insights
           </span>
           <span style={{
-            padding: '4px 12px',
+            padding: '6px 14px',
             borderRadius: 'var(--radius-full)',
             backgroundColor: 'rgba(255, 183, 77, 0.12)',
             border: '1px solid rgba(255, 183, 77, 0.3)',
             color: 'var(--warning)',
-            fontSize: '12px',
+            fontSize: '13px',
             fontWeight: 600
           }}>
-            🔥 Firebase Synced
+            ⚡ Supabase Synced
           </span>
         </div>
       </div>
 
-      <div style={{ marginTop: '48px' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '520px', margin: '0 auto' }}>
         <CameraCapture onImageCapture={handleImageCapture} isLoading={isLoading} />
 
         {error && (

@@ -1,5 +1,22 @@
 # HerbHeal Compass — Merged & Fixed Dynamic System
 
+This repository contains a full-stack herbal intelligence platform with a Next.js frontend, a Flask backend, and a machine-learning inference layer.
+
+## Quick project map
+- app/: app routes and pages
+- backend/: Flask API service
+- components/: shared UI components
+- hooks/: React hooks
+- lib/: shared utilities and integrations
+- ml/: ML inference and training scripts
+- prisma/: database schema and seed logic
+- scripts/: local developer helpers
+- docs/: project documentation
+
+## Run locally
+- Backend: powershell -ExecutionPolicy Bypass -File .\scripts\dev-backend.ps1
+- Frontend: powershell -ExecutionPolicy Bypass -File .\scripts\dev-frontend.ps1
+
 This replaces the hardcoded herb data with a Postgres-backed system that
 enriches itself daily. It's a merge of two earlier drafts, keeping what each
 did well and fixing what didn't hold up under review.

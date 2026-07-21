@@ -2,6 +2,7 @@
 
 import CompassForm from '@/components/CompassForm';
 import HerbCard from '@/components/HerbCard';
+import SkeletonLoader from '@/components/SkeletonLoader';
 import { useRecommendations } from '@/hooks/useRecommendations';
 
 export default function CompassPage() {
@@ -11,7 +12,10 @@ export default function CompassPage() {
     <div className="page-compass">
       <section className="hero hero-compact">
         <div className="hero-glow"></div>
-        <h1 className="hero-title">🧭 HerbHeal Compass</h1>
+        <h1 className="hero-title">
+          <span className="hero-title-icon">🧭</span>
+          <span className="hero-title-text">HerbHeal Compass</span>
+        </h1>
         <p className="hero-subtitle">
           Tell us your symptoms and dosha to discover personalized Ayurvedic herb recommendations.
         </p>
@@ -24,6 +28,16 @@ export default function CompassPage() {
             isLoading={isPending}
           />
         </section>
+
+        {isPending && (
+          <section className="section">
+            <h3 style={{ color: 'var(--accent-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ animation: 'spin 1.2s linear infinite' }}>🧭</span>
+              Computing Ayurvedic Herb Recommendations...
+            </h3>
+            <SkeletonLoader count={4} type="card" />
+          </section>
+        )}
 
         {isError && (
           <div className="error-card" id="compass-error">

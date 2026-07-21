@@ -1,48 +1,75 @@
-"""Loads a trained checkpoint and predicts species for a single image."""
-import base64
-import io
+#!/usr/bin/env python3
+"""
+infer.py - Fast plant species identification from a photo using a Hugging Face model.
 
-import torch
-import torch.nn.functional as F
+Usage:
+    python infer.py path/to/plant.jpg
+    python infer.py path/to/plant.jpg --model <hf_model_id> --topk 3
+
+Designed for low latency (<5s on CPU for a single image, faster on GPU) by:
+  - Using a lightweight pre-trained image-classification model (MobileNet-based by default)
+  - Loading the model once and running a single forward pass
+  - Using fp16 on GPU if available
+"""
+
+import argparse
+import sys
+import time
+
 from PIL import Image
-from torchvision import transforms
-
-from train import build_model
-
-_TRANSFORM = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
 
 
-class PlantClassifier:
-    def __init__(self, checkpoint_path: str, device: str | None = None):
-        self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-        ckpt = torch.load(checkpoint_path, map_location=self.device)
-        self.classes = ckpt["classes"]
-        self.model = build_model(num_classes=len(self.classes))
-        self.model.load_state_dict(ckpt["model_state"])
-        self.model.to(self.device).eval()
+DEFAULT_MODEL = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
 
-    @torch.no_grad()
-    def predict(self, image_base64: str, top_k: int = 3):
-        image_bytes = base64.b64decode(image_base64)
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        tensor = _TRANSFORM(image).unsqueeze(0).to(self.device)
 
-        logits = self.model(tensor)
-        probs = F.softmax(logits, dim=1)[0]
-        top_probs, top_idxs = probs.topk(min(top_k, len(self.classes)))
+def load_pipeline(model_id: str):
+    import torch
+    from transformers import pipeline
 
-        return [
-            {
-                # class folder names are expected to be scientific names with
-                # underscores, e.g. "Azadirachta_indica" -> "Azadirachta indica"
-                "scientific": self.classes[idx].replace("_", " "),
-                "label": self.classes[idx].replace("_", " "),
-                "confidence": float(prob),
-            }
-            for prob, idx in zip(top_probs.tolist(), top_idxs.tolist())
-        ]
+    device = 0 if torch.cuda.is_available() else -1
+    dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+
+    clf = pipeline(
+        task="image-classification",
+        model=model_id,
+        device=device,
+        torch_dtype=dtype,
+    )
+    return clf
+
+
+def identify(image_path: str, model_id: str = DEFAULT_MODEL, top_k: int = 3):
+    start = time.time()
+
+    image = Image.open(image_path).convert("RGB")
+
+    clf = load_pipeline(model_id)
+    results = clf(image, top_k=top_k)
+
+    elapsed = time.time() - start
+    return results, elapsed
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Identify a plant from a photo using Hugging Face models.")
+    parser.add_argument("image", help="Path to the plant image file")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help="Hugging Face model id to use")
+    parser.add_argument("--topk", type=int, default=3, help="Number of top predictions to return")
+    args = parser.parse_args()
+
+    try:
+        results, elapsed = identify(args.image, args.model, args.topk)
+    except Exception as e:
+        print(f"Error during inference: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Inference time: {elapsed:.2f}s")
+    print("Predictions:")
+    for r in results:
+        label = r.get("label", "unknown")
+        score = r.get("score", 0.0)
+        print(f"  - {label}: {score * 100:.2f}%")
+
+
+if __name__ == "__main__":
+    main()

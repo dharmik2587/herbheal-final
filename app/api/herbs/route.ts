@@ -3,13 +3,15 @@ import { prisma } from '@/lib/prisma';
 import { herbCreateSchema } from '@/lib/validation';
 import { parseJsonArray } from '@/lib/helpers';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const symptom = searchParams.get('symptom');
     const search = searchParams.get('q');
     const dosha = searchParams.get('dosha');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '250', 10), 300);
     const skip = Math.max(parseInt(searchParams.get('skip') || '0', 10), 0);
 
     const where: any = {};
@@ -33,8 +35,6 @@ export async function GET(request: NextRequest) {
       ];
     }
     if (dosha) {
-      // SQLite stores doshas as a JSON string e.g. '["Vata","Kapha"]'.
-      // Use `contains` to search within the serialized string.
       const normalized = dosha.charAt(0).toUpperCase() + dosha.slice(1).toLowerCase();
       where.doshas = { contains: normalized };
     }
@@ -53,7 +53,6 @@ export async function GET(request: NextRequest) {
       prisma.herb.count({ where }),
     ]);
 
-    // Parse JSON-encoded array fields before returning
     const herbsWithParsed = herbs.map((herb) => ({
       ...herb,
       ayurvedicProperties: parseJsonArray(herb.ayurvedicProperties),
@@ -69,9 +68,12 @@ export async function GET(request: NextRequest) {
       data: herbsWithParsed,
       meta: { total, limit, skip, hasMore: skip + herbs.length < total },
     });
-  } catch (error) {
-    console.error('GET /api/herbs error:', error);
-    return NextResponse.json({ error: 'Failed to fetch herbs' }, { status: 500 });
+  } catch (error: any) {
+    console.error('GET /api/herbs DB read error:', error);
+    return NextResponse.json(
+      { error: 'Database query failed', details: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -87,7 +89,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Serialize array fields to JSON strings for SQLite
     const data = {
       ...parsed.data,
       ayurvedicProperties: JSON.stringify(parsed.data.ayurvedicProperties ?? []),
@@ -100,8 +101,8 @@ export async function POST(request: NextRequest) {
 
     const herb = await prisma.herb.create({ data });
     return NextResponse.json(herb, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('POST /api/herbs error:', error);
-    return NextResponse.json({ error: 'Failed to create herb' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create herb', details: error.message }, { status: 500 });
   }
 }

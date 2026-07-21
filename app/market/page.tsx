@@ -52,11 +52,12 @@ export default function MarketPage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)', paddingBottom: '4rem' }}>
-      <div className="hero hero-compact hero-glow" style={{ padding: '4rem 1rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)', marginBottom: '2rem' }}>
-        <h1 className="hero-title" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', margin: '0 0 1rem 0', color: 'var(--text-primary)' }}>
-          💰 Trade Compass
+      <div className="hero hero-compact hero-glow">
+        <h1 className="hero-title">
+          <span className="hero-title-icon">💰</span>
+          <span className="hero-title-text">Trade Compass</span>
         </h1>
-        <p className="hero-subtitle" style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>
+        <p className="hero-subtitle">
           Live market prices for medicinal herbs — updated in real-time
         </p>
       </div>

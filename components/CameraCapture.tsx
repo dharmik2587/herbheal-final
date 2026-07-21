@@ -64,11 +64,11 @@ export default function CameraCapture({ onImageCapture, isLoading }: CameraCaptu
             minHeight: '200px'
           }}
         >
-          <span style={{ fontSize: '48px', marginBottom: '16px' }}>📷</span>
-          <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: '36px', marginBottom: '12px', display: 'block', lineHeight: 1 }}>📷</span>
+          <h3 style={{ margin: '0 0 6px 0', color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 700 }}>
             Tap to Capture or Upload
           </h3>
-          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px' }}>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.5 }}>
             Take a clear photo of the plant leaves, flowers, or fruit.
           </p>
           <input

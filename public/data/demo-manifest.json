@@ -1,0 +1,32 @@
+[
+  {
+    "id": "aloe-vera",
+    "name": "Aloe Vera",
+    "filename": "aloe vera.jpg",
+    "path": "/data/plants photos demo/aloe vera.jpg"
+  },
+  {
+    "id": "money-plant",
+    "name": "Money Plant",
+    "filename": "money plant.webp",
+    "path": "/data/plants photos demo/money plant.webp"
+  },
+  {
+    "id": "spider-plant",
+    "name": "Spider Plant",
+    "filename": "spider plant.jpeg",
+    "path": "/data/plants photos demo/spider plant.jpeg"
+  },
+  {
+    "id": "tulsi",
+    "name": "Tulsi (Holy Basil)",
+    "filename": "tulsi.webp",
+    "path": "/data/plants photos demo/tulsi.webp"
+  },
+  {
+    "id": "turmeric-plant",
+    "name": "Turmeric Plant",
+    "filename": "turmeric plant.webp",
+    "path": "/data/plants photos demo/turmeric plant.webp"
+  }
+]

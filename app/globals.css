@@ -440,12 +440,12 @@ button {
 .hero {
   position: relative;
   text-align: center;
-  padding: 96px 24px 64px;
+  padding: 80px 24px 48px;
   overflow: hidden;
 }
 
 .hero-compact {
-  padding: 64px 24px 48px;
+  padding: 48px 24px 32px;
 }
 
 .hero-glow {
@@ -455,30 +455,61 @@ button {
   transform: translateX(-50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(76, 175, 80, 0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.14) 0%, transparent 65%);
   pointer-events: none;
+  z-index: 0;
   animation: pulse-glow 6s ease-in-out infinite;
 }
 
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 800;
   letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  animation: fadeInUp 0.8s ease-out;
+  flex-wrap: wrap;
+}
+
+.hero-title-icon {
+  font-size: 0.9em;
+  line-height: 1;
+  display: inline-block;
+}
+
+.hero-title-text {
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 16px;
-  animation: fadeInUp 0.8s ease-out;
 }
 
 .hero-subtitle {
+  position: relative;
+  z-index: 1;
   font-size: 1.15rem;
   color: var(--text-muted);
-  max-width: 600px;
-  margin: 0 auto 32px;
+  max-width: 650px;
+  margin: 0 auto 24px;
   line-height: 1.7;
   animation: fadeInUp 0.8s ease-out 0.15s backwards;
+}
+
+.badge-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
 }
 
 /* ================================================
