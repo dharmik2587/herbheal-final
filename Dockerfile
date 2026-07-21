@@ -1,9 +1,9 @@
 # Use Node.js 18 slim image for Next.js build and serve
 FROM node:18-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-co-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
@@ -22,6 +22,7 @@ ENV NODE_ENV production
 
 # Generate Prisma Client & Build Next.js
 RUN npx prisma generate
+RUN npx prisma db push
 RUN npm run build
 
 # Production image, copy all the files and run next
